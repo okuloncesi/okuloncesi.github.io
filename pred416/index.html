@@ -1,0 +1,1281 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important} img{max-width:100%}</style>
+<title>PRED 416 Sprint</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: one focused card at a time; sticky progress bar on top, big nav buttons at the bottom. */
+:root{
+  --bg:#EEF3F1; --surface:#FFFFFF; --ink:#16231F; --muted:#56665F; --line:#D3DDD9;
+  --accent:#0E7466; --accent-ink:#FFFFFF; --hl:#FFE38A; --hl-ink:#3B2F00;
+  --good:#1F8A4C; --bad:#C0392B; --soft:#E2ECE8;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1715; --surface:#17221F; --ink:#E6EEEA; --muted:#9DB0A8; --line:#2A3A35;
+  --accent:#3CC2AC; --accent-ink:#06201B; --hl:#5A4A0E; --hl-ink:#FFE9A3;
+  --good:#4CC27E; --bad:#F07565; --soft:#1F2E2A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1715; --surface:#17221F; --ink:#E6EEEA; --muted:#9DB0A8; --line:#2A3A35;
+  --accent:#3CC2AC; --accent-ink:#06201B; --hl:#5A4A0E; --hl-ink:#FFE9A3;
+  --good:#4CC27E; --bad:#F07565; --soft:#1F2E2A; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:17px;line-height:1.6;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:-.01em}
+.spacer{flex:1}
+.pill{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill.warn{background:var(--hl);color:var(--hl-ink)}
+.bar{height:6px;background:var(--soft)}
+.bar>i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.iconbtn{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:4px 10px;font:inherit;font-size:14px;cursor:pointer}
+main{padding-block:20px 120px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.star{color:var(--accent);font-weight:700}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,5vw,34px);line-height:1.15;margin:6px 0 4px;text-wrap:balance;letter-spacing:-.015em}
+h2{font-family:var(--display);font-weight:600;font-size:21px;margin:0 0 10px;text-wrap:balance}
+.subprog{display:flex;gap:5px;margin:14px 0 18px}
+.subprog span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.subprog span.done{background:var(--accent)}
+.subprog span.now{background:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card p{margin:0 0 12px}
+.card ul,.card ol{margin:0 0 12px;padding-left:22px}
+.card li{margin-bottom:6px}
+.card li::marker{color:var(--accent)}
+mark{background:var(--hl);color:var(--hl-ink);padding:0 3px;border-radius:3px}
+.k{font-weight:700}
+.note{border-left:4px solid var(--accent);background:var(--soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0}
+.mini{font-size:14px;color:var(--muted)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+td,th{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--soft)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2>div{border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+@media (max-width:520px){.grid2{grid-template-columns:1fr}}
+/* flashcards */
+.flash{min-height:190px;border:2px solid var(--line);border-radius:14px;padding:22px;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;font-size:19px;background:var(--surface);user-select:none}
+.flash.back{border-color:var(--accent);font-size:17px;text-align:left;justify-content:flex-start}
+.flash .hint{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{font:inherit;font-weight:700;border-radius:10px;padding:12px 18px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;flex:1;min-width:130px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.good{border-color:var(--good);color:var(--good)}
+.btn.bad{border-color:var(--bad);color:var(--bad)}
+.btn:focus-visible,.iconbtn:focus-visible,.opt:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn[disabled]{opacity:.45;cursor:default}
+/* mcq */
+.opt{display:block;width:100%;text-align:left;font:inherit;padding:12px 14px;margin-bottom:8px;border:2px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);cursor:pointer}
+.opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+.why{margin-top:8px}
+/* write */
+textarea{width:100%;min-height:220px;font:inherit;font-size:16px;padding:12px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+.model{border-top:1px dashed var(--line);margin-top:16px;padding-top:16px}
+.model p{margin:0 0 10px}
+.chk label{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}
+.chk input{margin-top:5px;width:18px;height:18px;accent-color:var(--accent)}
+.score{font-family:var(--display);font-weight:800;font-size:22px}
+/* bottom nav */
+nav.bottom{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav.bottom .wrap{display:flex;gap:10px;padding-block:10px}
+nav.bottom .btn{padding:14px}
+/* timer */
+.timer{display:flex;align-items:center;gap:8px}
+.timer .t{font-variant-numeric:tabular-nums;font-weight:700}
+/* drawer */
+.drawer{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 40%,transparent);z-index:20;display:flex;justify-content:flex-end}
+.drawer .panel{background:var(--surface);width:min(380px,100%);height:100%;overflow:auto;padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.drawer button.step{display:flex;gap:10px;width:100%;text-align:left;font:inherit;padding:10px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.drawer button.step .n{font-variant-numeric:tabular-nums;color:var(--muted);min-width:22px}
+.drawer button.step.cur{font-weight:700;color:var(--accent)}
+.done-tick{color:var(--good);margin-left:auto}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hrow">
+    <span class="brand">PRED 416 Sprint</span>
+    <span class="pill" id="examLeft">Sınava —</span>
+    <span class="spacer"></span>
+    <span class="timer"><span class="pill" id="stepTimer">⏱ —</span><button class="iconbtn" id="timerBtn" type="button">Başlat</button></span>
+    <button class="iconbtn" id="menuBtn" type="button" aria-label="Adım listesini aç">Adımlar</button>
+  </div>
+  <div class="bar"><i id="bar"></i></div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<nav class="bottom"><div class="wrap">
+  <button class="btn" id="prevBtn" type="button">← Geri</button>
+  <button class="btn primary" id="nextBtn" type="button">Devam →</button>
+</div></nav>
+
+<div class="drawer" id="drawer" hidden><div class="panel" id="drawerPanel"></div></div>
+
+<script>
+/* ============ CONTENT ============ */
+const S = [];
+
+S.push({title:"Başla: sınav nasıl olacak?", min:5, star:true, blocks:[
+{t:"learn", h:"3 soru, klasik", html:`
+<p>Sınav <span class="k">bugün 17:30–19:30</span>. 3 essay sorusu. Arkadaşının notundaki hoca ipuçları:</p>
+<ol>
+<li><span class="k">“Öğretmensin, aile katılımı lazım.”</span> → <mark>Why</mark> (neden gerekli), <mark>Barriers</mark> (nasıl aşarsın), <mark>Practices</mark> (somut örnek). Kaynaklar: Coletta, Lyons/Robbins &amp; Smith. Format: <em>“Şunu yaparım, şu sebeple yaparım, kaynak şunu söylüyor.”</em></li>
+<li><span class="k">“Aile katılım uzmanısın: 7 vital ingredients.”</span> → <mark>Tanımlama yapma</mark>; her birinin <span class="k">rolünü ve önemini</span> yaz.</li>
+<li><span class="k">“Türkiye’den bir sorun seç, two-generation approach ile program tasarla.”</span> → amaç, core components, başarı koşulları.</li>
+</ol>
+<div class="note">Hocanın uyarısı: <span class="k">Empirical evidence</span>. Her cevaba 1–2 araştırma bulgusu koy.</div>`},
+{t:"learn", h:"Konu havuzu + her cevabın iskeleti", html:`
+<p>3 soru bu havuzdan çıkacak: <span class="k">general forces &amp; aile bir developmental system</span> · <span class="k">parenting styles, Bowen</span> · <span class="k">7 vital ingredients</span> · <span class="k">types of FE</span> · <span class="k">positive home–school partnership</span>.</p>
+<h2>Her cevapta bu 6 adım</h2>
+<ol>
+<li><span class="k">Tez</span>: 1–2 cümle</li>
+<li><span class="k">Teori/kaynak</span>, adıyla (Bronfenbrenner, Bowen, Lyons et al., Coletta, Epstein)</li>
+<li><span class="k">Rol &amp; önem</span>: “This matters because…”</li>
+<li><span class="k">Somut uygulama</span>: “As a teacher I would… because…”</li>
+<li><span class="k">Evidence</span>: “Research shows… (Author, year)”</li>
+<li><span class="k">Kapanış</span>: partnership, reciprocal, ongoing</li>
+</ol>
+<p class="mini">Altın kelimeler: reciprocal · two-way · shared responsibility · strengths-based · non-deficit · culturally responsive · continuity · mesosystem · “not yet reached by our approach”.</p>`},
+{t:"mcq", items:[
+{q:"7 vital ingredients sorusunda hoca ne istiyor?", o:["Her birinin tanımını detaylıca yazmanı","Her birinin rolünü ve önemini","Sadece sırasını","Epstein ile karşılaştırma"], a:1, w:"Not: “Don't describe, sadece önemi ve rolü.” Kalıp: Its role is… It matters because… Without it…"},
+{q:"Hoca her cevapta özellikle neye dikkat et dedi?", o:["Türkçe yazmaya","Empirical evidence (okumalardaki bulgular)","Kısa yazmaya","Diyagram çizmeye"], a:1, w:"“Emprical evidence → okumalarda dikkat et.” Yazar + yıl + bulgu yeterli."}
+]}
+]});
+
+S.push({title:"Neden family engagement? Büyük resim", min:10, star:true, blocks:[
+{t:"learn", h:"Aileleri değiştiren 4 güç", html:`
+<div class="grid2">
+<div><span class="k">Demography &amp; mobility</span><br>kentleşme, göç, küçülen hane, farklı bakım düzenleri. <mark>Türkiye: 0–14 yaş payı %26.4 (2007) → %20.4 (2025); 65+ %7.1 → %11.1</mark></div>
+<div><span class="k">Economy &amp; work</span><br>geçim maliyeti, iş güvencesizliği, iki ebeveynin de çalışması, <span class="k">time scarcity</span>. Ekonomik baskı bir <em>parenting condition</em> olur: stres etkileşime yansır.</div>
+<div><span class="k">Culture &amp; rights</span><br>değişen cinsiyet rolleri, çocuğun sesi. Sürekli müzakere: authority↔autonomy, collective↔individual, local↔global.</div>
+<div><span class="k">Technology</span><br>connection + <span class="k">technoference</span> (cihaz, etkileşimi böler) + digital gap + yeni ebeveynlik işi (ekran sınırı).</div>
+</div>
+<p style="margin-top:12px">Aileler pasif ayna değildir: geniş güçleri <span class="k">yorumlar, tamponlar, dönüştürür</span>. Toplum çocuğa <span class="k">gündelik aile hayatı üzerinden</span> ulaşır.</p>
+<div class="note">Merkezî problem: <em>“Not by asking families to fit the school, but by designing relationships that fit diverse families.”</em></div>`},
+{t:"learn", h:"Tanım, biçimler, evrim", html:`
+<p><span class="k">Family engagement</span> = <em>the ongoing, reciprocal participation of families and educators in supporting children's learning, development and well-being across home, ECE and community.</em></p>
+<p>Akılda tut: <mark>Ongoing · Reciprocal · Multi-context · Shared purpose</mark>. Bir süreç ve ilişkidir, etkinlik listesi değildir.</p>
+<p><span class="k">Family</span>: çocuğu büyüten herkes (anne, baba, büyükanne, koruyucu…). Aile yapısına bakıp katılım kapasitesi hakkında yargıya varma.</p>
+<p><span class="k">4 biçim:</span> Communicate · Learn at home · Participate · Decide</p>
+<p><span class="k">Evrim:</span> Parent education (uzman bilgi verir) → Parent involvement (okulun belirlediği rollerde katılım) → <mark>Family–school partnership</mark> (bilgi, hedef, karar ve problem çözme paylaşılır).</p>
+<p>Partnership 4 ayak: <span class="k">Equality · Trust · Shared responsibility · Collaboration</span>.</p>`},
+{t:"learn", h:"Kanıt ve kim kazanır", html:`
+<ul>
+<li>Family engagement; öğrenme, uyum, devam, motivasyon ve okul başarısıyla <span class="k">ilişkili</span>.</li>
+<li><mark>Evdeki öğrenme etkileşimleri, okul etkinliğine katılmaktan daha güçlü bağlantılı.</mark></li>
+<li>Erken yaş önemli (school readiness, geçişler). Bağlam önemli.</li>
+<li>“Daha çok = daha iyi” değil. 3 boyut: <span class="k">Frequency × Quality × Breadth</span> (home + ECE + community).</li>
+</ul>
+<p><span class="k">Kim kazanır:</span> çocuk (learning, adjustment, attendance) · aile (knowledge, confidence, agency) · eğitimci (bağlamı anlama, güven) · toplum (hizmete erişim, kolektif kapasite).</p>`},
+{t:"learn", h:"Engeller ve yanıt", html:`
+<p>Engeller <span class="k">ilişkisel ve yapısal</span>; <mark>ebeveyn eksikliği değil</mark>:</p>
+<p class="mini">zaman/iş · temel ihtiyaçlar · dil · ulaşım/çocuk bakımı · geçmişteki kötü okul deneyimi · kültürel uyumsuzluk/güvensizlik · belirsiz beklentiler · tek aile modelini kayıran okul rutinleri</p>
+<p><span class="k">Yanıt:</span> <mark>NOTICE → CONTACT → UNDERSTAND → ADAPT</mark></p>
+<p>“Hard to reach” yerine <span class="k">“not yet reached by our current approach”</span>.</p>
+<p><span class="k">5 tasarım ilkesi:</span> Sustain · Offer choice · Share power · Design for belonging · Communicate &amp; recognize</p>
+<p><span class="k">CORE:</span> Connection · Optimism · Respect · Empowerment</p>
+<p><span class="k">Babalar:</span> “parent” anne demek değil. Zamandan çok etkileşimin kalitesi önemli. Okul pratiklerini denetle: mesaj kime gidiyor?</p>`},
+{t:"learn", h:"📖 Okuma: Coletta Ch.1 “Why Parent Involvement?” (Q1'in omurgası)", html:`
+<p><span class="k">Ana iddia:</span> başarılı programlar “an increase and sustainment in children's achievement, self-concepts and motivation” sağlıyor ve ebeveynler kendilerini daha olumlu görmeye başlıyor.</p>
+<p><span class="k">Gerekçe 1, değişen yaşam koşulları:</span> çalışan anneler, boşanma, yoksulluk; ebeveynler “feel powerless”. Bronfenbrenner (1967): “It is simply that conditions of life have changed.”</p>
+<p><span class="k">Gerekçe 2, akademik kazanımların sönmesi:</span> Head Start kazanımları “were lost when parents terminated their school involvement”. Honig (1975): az katılımla elde edilen kazanımlar zamanla azalıyor. <mark>Bronfenbrenner (1974): “the family is the most effective and economical system for fostering and sustaining the development of the child… Without such family involvement, any effects of intervention… are likely to be ephemeral.”</mark></p>
+<p><span class="k">Gerekçe 3, evin gücü:</span> “No influence upon the child's early years is as powerful as that of the home.” Coleman Report (1966) ve Jencks (1972): okul başarısında ana faktör ev ortamı. Bloom (1964): zekâ kapasitesinin %50'si 4 yaşına, %80'i 8 yaşına kadar gelişiyor. Coopersmith (1967): özsaygı 0–3 yaş arasında biçimleniyor.</p>
+<p><span class="k">Gordon'un (1968) 5 varsayımı:</span></p>
+<ol>
+<li>Öğrenmeye yönelik tutumlar esas olarak evde edinilir.</li>
+<li>Ebeveynin özsaygısı ve beklentileri çocuğun performansını etkiler.</li>
+<li>Çocuklar, ev ve okul eğitim deneyimini paylaştığında en iyi öğrenir.</li>
+<li>Ebeveyn kendi çocuğunu öğretebildiğinde özsaygısı ve yetkinliği artar.</li>
+<li>Katılan ebeveyn çocuğun gelişimini desteklemeye devam eder.</li>
+</ol>
+<p><span class="k">Araştırma kanıtı:</span></p>
+<ul>
+<li><mark>Head Start araştırması (MIDCO, 1972)</mark>: yoğun katılım çocuğun görev odaklılığı, başarısı, sözel zekâsı ve benlik algısıyla ilişkili; “the amount of parent involvement was apparently far more important than the model.”</li>
+<li><span class="k">Gordon'un Florida programı</span>: annelerin özsaygısı arttı; bazıları daha iyi eve taşındı, iş buldu, okula döndü.</li>
+<li><span class="k">Bittner et al.</span>: çok katılımcı ebeveynlerin çocukları kazanımlarını daha iyi korudu.</li>
+<li><span class="k">Klaus &amp; Gray (1968)</span>: katılan ebeveynler daha çok kitap okudu, çocukların dil puanı yükseldi.</li>
+</ul>
+<p><span class="k">Coletta'nın 5 faydası:</span> (1) başarı ve motivasyonda artış ve kalıcılık; (2) ebeveyn ve çocukta daha iyi benlik algısı; (3) okul ve eve ek destek; (4) kamuoyunun okulu anlaması; (5) ebeveynin kişisel gelişimi.</p>`},
+{t:"learn", h:"📖 Okuma: AÇEV “Eğitimde Aile Katılımı” + 68 Ideas (fayda ve engel)", html:`
+<p><span class="k">AÇEV tanımı (Morrison 2003):</span> “anne-babaların ve diğer aile üyelerinin, çocukların eğitimine ve gelişimine katkıda bulunmaları için eğitim programına katıldıkları bir süreç.” Amaç ev ile okulun koordineli ve birlikte hareket etmesi. Her okul aile katılımını kendisi tanımlar.</p>
+<p><mark>AÇEV'in kilit iddiası: okul başarısının en iyi yordayıcısı gelir ya da sosyal sınıf değil, ailenin evde öğrenmeyi destekleyen bir ortam kurması ve eğitime katılmasıdır.</mark> Katılım, düşük SES'li çocukların dezavantajını azaltır. Henderson &amp; Mapp (2002): katılım lisede bile başarıyı yordar.</p>
+<p><span class="k">Kim kazanır?</span></p>
+<ul>
+<li><b>Çocuk</b>: dil, problem çözme, okula hazırlık, devam, motivasyon, daha az sınıf tekrarı, daha iyi davranış.</li>
+<li><b>Aile</b>: rolünün farkına varır, özgüveni artar, sağlıklı iletişim kurar. “Ne kadar erken katılırsa etkisi o kadar güçlü.”</li>
+<li><b>Öğretmen</b>: programı daha etkili uygular, çocuğu daha iyi tanır, iş doyumu artar.</li>
+<li><b>Kurum</b>: süreklilik, fırsat eşitliği, kalite.</li>
+</ul>
+<p class="mini">Katılımı etkili kılmak <b>okulun sorumluluğudur</b>. Katılım okul öncesi ve ilkokulda daha yüksek; SES ve eğitim düzeyi arttıkça artar (eşitsizlik noktası). Okullar aileye geleneksel ve pasif bir rol biçiyor, aileler ise aktif rol istiyor; okullar etkinlikleri kendi kolaylığına göre düzenliyor. Bunlar engellerdir.</p>
+<p><span class="k">68 Parent Involvement Ideas: ebeveynlerin söylediği 4 katılmama nedeni (#13):</span></p>
+<ol>
+<li>Zamanım yok.</li>
+<li>Ne yapacağımı bilmiyorum.</li>
+<li>Önemli olduğunu bilmiyorum.</li>
+<li>Dili konuşmuyorum.</li>
+</ol>
+<p>Diğer maddeler:</p>
+<ul>
+<li>“One-third rule”: velilerin üçte biri katılırsa başarıda anlamlı iyileşme başlar.</li>
+<li>“One-way isn't communication.”</li>
+<li>Toplantıya getirmenin sırrı, gerçekten davet edildiklerini bilmeleri. Katılımı artırmanın en iyi yolu basitçe sormak.</li>
+<li>3F: Food, Families, Fun.</li>
+<li>İlgisizlik gibi görünen şey yorgunluk olabilir (“walk a mile in their shoes”).</li>
+<li>Toplantılarda çocuk bakımı sağla.</li>
+</ul>
+<p><span class="k">Lyons Ch.1 engeli:</span> farklı ekonomik ve kültürel arka plan ilişkiyi zorlaştırır. Veliler büyük kurumla temastan çekinir; personel velileri “uninterested or even hostile” görebilir.</p>`},
+{t:"learn", h:"📖 Okuma: babalar (Linking Fathers + Downer et al., 2008)", html:`
+<p><span class="k">Downer, Campos, McWayne &amp; Gartner (2008)</span>, 15 yılın ampirik çalışmalarının eleştirel incelemesi:</p>
+<ul>
+<li>Veli katılımı araştırmaları anneye odaklı ve babayı nadiren ele alıyor.</li>
+<li><mark>Sosyal-duygusal sonuçlara bakan 27 çalışmanın 25'i (%93) baba katılımı ile sosyal-duygusal beceriler arasında anlamlı pozitif ilişki buldu.</mark> En yaygın bulgu: destekleyici baba, daha az problem davranış.</li>
+<li>Daha sıkı desenli çalışmalarda baba katılımı, annenin katkısının <b>ötesinde ek varyans</b> açıklıyor.</li>
+<li>Black, Dubowitz &amp; Starr (1999): düşük gelirli babaların maddi katkısı ve şefkatli davranışı çocuğun alıcı dil becerisiyle ilişkili.</li>
+<li>Eksikler: babayı sadece “var ya da yok” diye ölçmek, tek kaynaktan (annenin) bilgi almak, teori eksikliği.</li>
+</ul>
+<p><span class="k">Linking Fathers (Minnesota, 2011 anketi):</span></p>
+<ul>
+<li>Babaların %98.6'sı programda yer almayı “çok önemli” buluyor.</li>
+<li>En büyük engel <b>zaman çakışması</b>: profesyonellerin %83.7'si, babaların %84'ü.</li>
+<li>Babaların 2. engeli “nasıl katılacağını bilmemek” (%46.6). Profesyonellerin 2. engeli erkek personel eksikliği (%43.2).</li>
+<li>Annelerin ve kadın personelin tutumu kapı bekçisi işlevi görüyor (“gateway”).</li>
+<li>Stratejiler: akşam ve cumartesi etkinlikleri, eve götürülecek projeler, kişisel davet (el ilanı değil; çocuk ya da anne davet etsin), baba-çocuk etkinlikleri (FRED: Fathers Reading Every Day), erkek personel ve gönüllüler, kayıt formunda babanın adına yer.</li>
+<li>Coletta'dan örnek: “Fathers' spaghetti dinner”, babalar günü cumartesisi.</li>
+</ul>
+<p class="mini">Babanın sözü: “Just let it be known that Fathers are welcome and that they will be treated with respect as an equal. Pretty simple.”</p>`},
+{t:"learn", h:"Slayt: 8 temel varsayım + 9 ilke", html:`
+<p><span class="k">Eight fundamentals</span> (guiding assumptions):</p>
+<ol>
+<li>Families have hopes for their children.</li>
+<li>Home is a primary developmental context.</li>
+<li>Families bring expertise that schools do not have.</li>
+<li>Engagement is a process, not an event.</li>
+<li>Quality matters more than contact counts.</li>
+<li><mark>Barriers can be produced by school practices.</mark></li>
+<li>Engagement must be responsive to diversity.</li>
+<li>Partnership links home, school, and community.</li>
+</ol>
+<p><span class="k">Nine principles to leave with</span> (kapanış slaytı):</p>
+<ol>
+<li>Families are equal partners.</li>
+<li>Home is a primary developmental context.</li>
+<li>Respect diversity and varied needs.</li>
+<li>Assume families care about their children.</li>
+<li>Engagement matters across educational transitions.</li>
+<li>Engagement takes many forms, not all of them at school.</li>
+<li>Home, ECE and community are interconnected.</li>
+<li>Staff need preparation and organizational support.</li>
+<li>Trust and partnership take time.</li>
+</ol>
+<div class="note">Kapanış cümlesi: <em>Family engagement is not “getting parents to participate.” It is the intentional work of building reciprocal relationships and aligned environments around children's learning, development and well-being.</em></div>`},
+{t:"learn", h:"Slayt: koşulları yaratmak + ailenin tarafı", html:`
+<p><span class="k">A world of potential disconnects</span>: çocuk üç ortam arasında beklentileri, dilleri ve kimlikleri tek başına dengelemek zorunda kalır.</p>
+<ul>
+<li><span class="k">HOME</span>: time scarcity · technoference · stres · değişen rutinler</li>
+<li><span class="k">SCHOOL</span>: kalabalık gruplar · hesap verebilirlik baskısı · aileler hakkında varsayımlar · sınırlı zaman</li>
+<li><span class="k">COMMUNITY</span>: hareketlilik · zayıf yerel bağlar · eşitsiz hizmetler · ekonomik hayatta kalma</li>
+</ul>
+<p>“Home is powerful, but partnership multiplies opportunity.” Amaç okulu eve taşımak değil, <mark>ortamları çocuğun etrafında hizalamak</mark>. Home (ortak okuma, sohbet, oyun) ↔ ECE (öğretim, gözlem, geri bildirim) ↔ Community (sağlık ve sosyal hizmetler, kütüphane, park, akran ağları).</p>
+<p><span class="k">Create conditions (partnership kısmen bir tasarım problemidir):</span> <b>Routine communication</b> (öngörülebilir, iki yönlü; sadece sorun olduğunda değil) · <b>Trust &amp; problem-solving</b> (kriz gelmeden ilişki; yargıdan önce merak) · <b>Program improvement</b> (kime ulaşamıyoruz, program neyi değiştirebilir?) · <b>Staff development</b> (bilgi, beceri, prova, kurumsal destek).</p>
+<p><span class="k">Ailenin tarafı</span> (yükümlülük olarak değil davet olarak sunulur): <b>Share</b> (güçlü yanlar, bilgi, kültür) · <b>Communicate</b> (sorular, gözlemler, evdeki değişiklikler) · <b>Contribute</b> (ilgi ve kapasiteye uygun) · <b>Co-decide</b> (hedefler, stratejiler, program iyileştirme).</p>
+<p><span class="k">Neden hâlâ zor?</span> Aileler önemsiyor ama zaman, dil ve güven engeli yaşayabilir. Eğitimciler değer veriyor ama hazırlık ve zamanları yetmeyebilir. Okullar tek yönlü mesaj gönderebilir, görünür katılımı kayırabilir, “iyi veli”yi dar tanımlayabilir.</p>`},
+{t:"cards", cards:[
+["8 temel varsayım (eight fundamentals)?","Families have hopes · Home is a primary context · Families bring expertise · Process not event · Quality > contact counts · Barriers can be produced by school practices · Responsive to diversity · Partnership links home, school, community"],
+["Koşulları yaratmanın 4 alanı?","Routine communication · Trust & problem-solving · Program improvement · Staff development"],
+["Ailenin tarafındaki 4 fiil?","Share · Communicate · Contribute · Co-decide"],
+["Family engagement neyin işidir (kapanış)?","Çocuğun etrafında karşılıklı ilişkiler ve hizalanmış ortamlar kurmanın bilinçli işi; “getting parents to participate” değil"],
+["FE tanımının 4 anahtar kelimesi?","Ongoing · Reciprocal · Multi-context · Shared purpose"],
+["Aileyi değiştiren 4 güç?","Demography & mobility · Economy & work · Culture & rights · Technology"],
+["Türkiye demografi verisi?","0–14 yaş payı %26.4 (2007) → %20.4 (2025); 65+ %7.1 → %11.1"],
+["FE'nin evrimi (3 aşama)?","Parent education → Parent involvement → Family–school partnership"],
+["Engellere yanıt (4 adım)?","Notice → Contact → Understand → Adapt"],
+["“Hard to reach” yerine ne denir?","“Not yet reached by our current approach.”"],
+["CORE?","Connection · Optimism · Respect · Empowerment"],
+["Hangi katılım türü sonuçlarla daha güçlü bağlantılı?","Evdeki öğrenme etkileşimleri (okul etkinliğine katılımdan daha güçlü)"],
+["Technoference nedir?","Cihazların konuşmayı, oyunu, ortak dikkati ve aile rutinlerini bölmesi"]
+]},
+{t:"mcq", items:[
+{q:"Bir öğretmen “bu aileler ilgisiz” diyor. Ders çerçevesine göre en iyi yeniden çerçeveleme?", o:["Aileler eğitimi önemsemiyor","Not yet reached by our current approach","Daha sert davet gerekir","Sadece annelere ulaşılmalı"], a:1, w:"Engeller ilişkisel ve yapısaldır, ebeveyn eksikliği değil. Okul neyi değiştirebilir diye sor."},
+{q:"Partnership'i “involvement”tan ayıran nedir?", o:["Daha çok etkinlik","Ailelerin okulun tanımladığı rollerde yer alması","Bilgi, hedef, karar ve problem çözmenin paylaşılması","Uzmanların bilgi vermesi"], a:2, w:"Involvement: okulun belirlediği roller. Partnership: karşılıklı, eşit, ortak sorumluluk."}
+]}
+]});
+
+S.push({title:"Aile bir gelişim sistemi: 3 mercek + Kağıtçıbaşı", min:10, star:false, blocks:[
+{t:"learn", h:"Kağıtçıbaşı: development in context", html:`
+<ul>
+<li>Gelişim <span class="k">bağlam içinde</span> olur. Çocuğun bağlamı = <mark>family + culture</mark>.</li>
+<li>Aile en yakın ve en güçlü bağlamdır. Kültür davranışlara <span class="k">anlam</span> yükler.</li>
+<li><span class="k">Socialization</span>: çocuğun toplumunda uygun görülen inanç, değer ve davranışları edinmesi. Hem kültürel aktarım hem ilişki süreci; çocuk da aktiftir.</li>
+<li>Evrensel tek bir “iyi parenting” yok. “Bu ebeveynler nasıl?” yerine <span class="k">“under what conditions?”</span> diye sor.</li>
+</ul>
+<h2>Kağıtçıbaşı'nın 3 aile modeli</h2>
+<ol>
+<li><span class="k">Total interdependence</span>: geleneksel/kırsal; maddi + duygusal bağımlılık; itaat.</li>
+<li><span class="k">Independence</span>: Batı orta sınıfı; özerklik.</li>
+<li><mark>Psychological (emotional) interdependence</mark>: kentleşen Türkiye. Maddi bağımlılık azalır, duygusal bağ sürer. → <span class="k">autonomous-related self</span>. Program önerisi: özerkliği destekle ama bağı koparma.</li>
+</ol>`},
+{t:"learn", h:"Bronfenbrenner: ecological systems", html:`
+<div class="tbl"><table>
+<tr><th>Katman</th><th>İçerik</th></tr>
+<tr><td class="k">Microsystem</td><td>doğrudan etkileşim: ev, anaokulu, akranlar</td></tr>
+<tr><td class="k">Mesosystem</td><td>microsystemler arası bağ: <mark>ev–okul iletişimi = family engagement'ın kendisi</mark></td></tr>
+<tr><td class="k">Exosystem</td><td>dolaylı: ebeveynin işyeri, belediye hizmetleri</td></tr>
+<tr><td class="k">Macrosystem</td><td>kültür, yasa, politika, ekonomi</td></tr>
+<tr><td class="k">Chronosystem</td><td>zaman, tarihsel değişim, geçişler</td></tr>
+</table></div>
+<p style="margin-top:12px">Sonraki model: <span class="k">PPCT</span> (Person × Process × Context × Time). Gelişimi <span class="k">proximal processes</span>, yani düzenli ve karşılıklı etkileşimler sürükler.</p>
+<div class="note">Örnek zincir: annenin öngörülemeyen akşam vardiyası (exo) → düzensiz rutin ve uyku → çocuk sabah ayrılırken ağlar. Destek yalnızca ebeveynlik becerisini değil, <span class="k">saatleri ve hizmetleri</span> de hedeflemeli.</div>`},
+{t:"learn", h:"Sameroff: transactional model + karşılaştırma", html:`
+<p>Çocuk ve bağlam <span class="k">zamanla birbirini değiştirir</span>. “Zor çocuk” ya da “yetersiz ebeveyn” açıklaması eksik kalır.</p>
+<p><span class="k">Örnek:</span> T1 bebek zor sakinleşiyor → T2 yorgun bakımveren tutarsız tepki veriyor → T3 ikisinin de stresi artıyor → T4 dinlenme, yardım ve uyumlu bakım döngüyü kırıyor. <mark>Döngü olasılıksaldır, kaçınılmaz değil.</mark></p>
+<p><span class="k">Coercive cycle:</span> olumsuz beklenti → sert tepki → çocuk tepki verir → beklenti pekişir.</p>
+<p><span class="k">Serve and return</span> (Harvard Center): karşılıklı, çocuğa yanıt veren etkileşim dil ve öz-düzenlemeyi destekler.</p>
+<div class="tbl"><table>
+<tr><th>Mercek</th><th>Sorduğu soru</th></tr>
+<tr><td>Family systems</td><td>Hangi tekrarlayan etkileşim örüntüsü durumu sürdürüyor?</td></tr>
+<tr><td>Ecological</td><td>Hangi ortamlar ve bağlar seçenekleri biçimliyor?</td></tr>
+<tr><td>Transactional</td><td>Çocuk ve bakımveren zamanla birbirini nasıl değiştiriyor?</td></tr>
+</table></div>
+<p class="mini">5 ilke: Relational · Contextual · Reciprocal · Developmental · Non-judgmental</p>`},
+{t:"learn", h:"📖 Okuma: Kağıtçıbaşı Ch.2 “Development in Context”", html:`
+<p><span class="k">“Human development is socialization, together with maturation.”</span> Kültür “organizer of meaning”: aynı davranış farklı bağlamlarda farklı anlam taşır.</p>
+<p><span class="k">Kontrol ve sevgi:</span></p>
+<ul>
+<li>Kuzey Amerika ve Almanya'da ebeveyn kontrolü ret ve düşmanlık olarak algılanıyor; Japonya ve Kore'de aynı kontrol sıcaklık ve kabul olarak algılanıyor.</li>
+<li>Kağıtçıbaşı (1970): Türk ve Amerikalı ergenler ebeveyn sevgisini aynı düzeyde algılıyor, ama Türk ergenler daha fazla kontrol algılıyor. <mark>Sevgi ve kontrol bağımsız boyutlar; kontrol sosyal norm, sevgi muhtemelen evrensel.</mark></li>
+<li>Lau &amp; Cheung: “dominating” kontrol sıcaklıkla negatif, “order-keeping” kontrol pozitif ilişkili. Bu, authoritarian ve authoritative ayrımına paralel.</li>
+</ul>
+<p><span class="k">Ebeveyn inançları:</span></p>
+<ul>
+<li>Super &amp; Harkness, <b>developmental niche</b>: fiziksel ve sosyal ortam + bakım pratikleri + bakımverenin psikolojisi.</li>
+<li>Kohn (1969): orta sınıf özerkliğe, işçi sınıfı itaate değer veriyor.</li>
+<li>Cashmore &amp; Goodnow (1986): sınıf kontrol edilince etnik farklar kayboluyor; etnisite ve sınıf birbirine karışık.</li>
+<li><mark>Türkiye: eğitimli orta sınıf anneler çocuklarını sınavlara “sonsuz” çalıştırıyor; düşük SES'li anneler ise “yardım edecek kadar bilmediklerine” inandıkları için çalıştırmıyor.</mark> → Q3 için gerekçe.</li>
+</ul>
+<p><span class="k">Ampirik kanıt:</span></p>
+<ul>
+<li><b>Value of Children (VOC) çalışması, Türkiye</b>: ebeveyn eğitimi arttıkça çocuktan beklenen ev işi yardımı düşüyor (eğitimsiz %28 → üniversite %0); maddi yardım beklentisi de düşüyor (%56 → %20). Çocuğun değeri ekonomik değerden <b>psikolojik değere</b> kayıyor.</li>
+<li><b>Sameroff, Rochester çalışması</b>: <mark>hiç risk faktörü olmayan çocuklar, 8–9 risk faktörü olanlardan zekâ testinde 30 puandan fazla yüksek.</mark> Riskin türünden çok sayısı önemli; 4 riskte olumsuz sonuç ihtimali 10 kat.</li>
+<li><b>McLoyd (1990)</b>: yoksulluk, psikolojik stres üzerinden destekleyici ve tutarlı ebeveynliği azaltıyor. Sosyal ağlar bu etkiyi tamponluyor.</li>
+</ul>
+<div class="note"><b>Two-generation gerekçesi:</b> yoksulluk ile çocuk arasında aracı değişkenler var. “Even if poverty cannot be arrested, the mediating family problems… can be reduced by intervention programs providing support to parents.”</div>`},
+{t:"learn", h:"📖 Okuma: Hanson & Lynch Ch.2 (teorik bakış açıları)", html:`
+<p><span class="k">Aile tanımı:</span> birbirine bağlı bireyler + ortak bağlılık. Klein &amp; White'a göre aileyi ayıran 4 özellik:</p>
+<ol>
+<li>Diğer gruplardan daha uzun sürer.</li>
+<li>Kuşaklar arasıdır.</li>
+<li>Hem biyolojik hem yasal bağ içerir.</li>
+<li>Daha geniş bir akrabalık ağına bağlıdır.</li>
+</ol>
+<p><span class="k">Family systems'in 4 varsayımı:</span></p>
+<ol>
+<li>Parçalar birbirine bağlıdır.</li>
+<li>Aile ancak bir bütün olarak anlaşılır.</li>
+<li>Aile çevresini etkiler ve ondan etkilenir.</li>
+<li>Sistem bir gerçeklik değil, bir “bilme yolu”dur.</li>
+</ol>
+<p>Homeostasis, vücudun iç termostatına benzer.</p>
+<p><span class="k">Turnbull, Summers &amp; Brotherson çerçevesi</span> (slayttaki 4 sorunun kaynağı):</p>
+<ul>
+<li><b>Resources</b> (girdi)</li>
+<li><b>Interaction</b> (süreç: subsystems, cohesion, adaptability)</li>
+<li><b>Functions</b> (çıktı: sevgi, özsaygı, ekonomik, günlük bakım, sosyalleşme, eğlence, eğitim)</li>
+<li><b>Life cycle</b> (değişim)</li>
+</ul>
+<p><span class="k">Ecological örnek (Hwa Hwa):</span> Down sendromlu, ailesi Kantonca konuşan bir çocuk. Okulda Kantonca bilen personel yok (mesosystem sorunu); ebeveynler işten izin alamıyor (exosystem engeli).</p>
+<p><span class="k">Transactional:</span> Sameroff &amp; Chandler (1975), “continuum of caretaking casualty”. Erken destek pozitif etkileşimlerden oluşan bir “yukarı spiral” yaratır.</p>
+<p><span class="k">Risk ve dayanıklılık:</span></p>
+<ul>
+<li><b>Werner, Kauai boylamsal çalışması</b>: biyolojik riske rağmen elverişli ortamdaki çocuklar daha iyi gelişti. Ailedeki koruyucu faktörler: ebeveyn eğitimi, bebeğe gösterilen ilgi, olumlu erken ebeveyn-çocuk ilişkisi, akraba bakımı.</li>
+<li><b>Rutter'ın 5 koruyucu mekanizması</b>: riski azaltmak, olumsuz zincirleme tepkileri azaltmak, özsaygı ve öz-yeterliği artırmak, olumlu fırsatlar açmak, deneyimi olumlu yeniden çerçevelemek.</li>
+</ul>
+<p><span class="k">Dunst, Trivette &amp; Deal'in aile merkezli 4 ilkesi:</span></p>
+<ol>
+<li>Ailenin kendi belirlediği ihtiyaçlara odaklan.</li>
+<li>Ailenin güçlü yanlarını kullan.</li>
+<li>Mevcut sosyal destek ağını güçlendir.</li>
+<li>Ailenin kendi yetkinliğini geliştiren yardım davranışları kullan.</li>
+</ol>
+<div class="note">Alıntı: “Collaborative partnerships between family members and professionals are at the heart of all interventions.” · “The family is much more than the sum of its parts.”</div>`},
+{t:"learn", h:"Slayt: aileyi okumak (4 soru, life course, rutinler)", html:`
+<p><span class="k">Aynı davranış farklı anlamlara gelebilir.</span> Örnek: anaokuluna başladıktan sonra içine kapanan 4 yaşındaki çocuk. Önce şunlara bak: <b>Child</b> (mizaç, öz-düzenleme) · <b>Family</b> (rutinler, değişiklikler) · <b>Context</b> (okul iklimi, iş saatleri, göç). Aile tiplerini sıralama; fırsatları, süreçleri ve kaynakları incele.</p>
+<p><span class="k">Aileyi incelemek için 4 soru:</span> <mark>Resources</mark> (beceri, sağlık, değerler, sosyal ağ, maddi güvence) · <mark>Relationships</mark> (yakınlık, çatışma, iletişim, uyum) · <mark>Functions</mark> (bakım, koruma, sevgi, kimlik, sosyalleşme) · <mark>Life course</mark> (beklenen ve beklenmeyen geçişler).</p>
+<p><span class="k">Family life course:</span> <b>Normative</b> stresörler (yeni kardeş, kreşe başlama) · <b>Non-normative</b> stresörler (iş kaybı, yerinden edilme, ağır hastalık, ayrılık) · <b>Protective processes</b> (esnek roller, destekleyici ilişkiler, hizmete erişim, öngörülebilir rutinler). Aile gelişimi tek ve evrensel bir sıra izlemez.</p>
+<p><span class="k">Systems in practice:</span> OBSERVE (davranış ne zaman çıkıyor, ortamlara göre ne değişiyor) → ASK WITHOUT BLAME (hangi rutinler değişti) → CO-DESIGN (bakımverenle birlikte öngörülebilir destek). <em>Çocuğun davranışı stresi gösterebilir ama nedenini tek başına göstermez.</em></p>
+<p><span class="k">Transactional kelime dağarcığı:</span> <b>Proximal</b> etkiler (doğrudan ve tekrarlı: konuşma, oyun, disiplin) · <b>Distal</b> etkiler (politika, istihdam, konut) · <b>Family practices &amp; representations</b>: rutinler ve “biz kimiz” anlatıları. <em>Practiced family ↔ represented family</em> birbirini pekiştirir.</p>
+<p><span class="k">Valuing children:</span> oyun, ev işi, bağımsızlık ve aileye katkı bir arada olabilir. Farklılıklar bir “iyi parenting” hiyerarşisini değil, ekoloji ve fırsat farkını gösterebilir.</p>
+<p class="mini">Arkadaş notu: mutlu evli annelerin çocuklarının güvenli bağlanma olasılığı daha yüksek; eşler birlikte ebeveynlik yaptığında (co-parenting) çocuklar daha iyi gelişiyor → aile bir sistemdir.</p>`},
+{t:"mcq", items:[
+{q:"Ebeveynin işyerinde vardiya değişikliği hangi sistem?", o:["Microsystem","Mesosystem","Exosystem","Macrosystem"], a:2, w:"Çocuk orada bulunmuyor ama ondan etkileniyor: exosystem."},
+{q:"Öğretmen ile ailenin haftalık iletişim defteri hangi sistem?", o:["Microsystem","Mesosystem","Exosystem","Chronosystem"], a:1, w:"İki microsystem (ev ve okul) arasındaki bağ: mesosystem. FE tam olarak burada çalışır."},
+{q:"Kentleşen Türkiye'de yaygınlaşan aile modeli (Kağıtçıbaşı)?", o:["Total interdependence","Independence","Psychological/emotional interdependence","Uninvolved"], a:2, w:"Maddi bağımlılık azalır, duygusal bağlılık sürer: autonomous-related self."}
+]},
+{t:"cards", cards:[
+["Kağıtçıbaşı: çocuğun bağlamı = ?","Family + culture"],
+["Socialization tanımı?","Çocuğun toplumunda uygun görülen inanç, motif, değer ve davranışları edinmesi; hem kültürel aktarım hem ilişki süreci"],
+["Autonomous-related self hangi modele ait?","Psychological/emotional interdependence (Kağıtçıbaşı)"],
+["PPCT?","Person × Process × Context × Time (bioecological model)"],
+["Transactional model kimin?","Sameroff: çocuk ve bağlam zamanla birbirini değiştirir"]
+]}
+]});
+
+S.push({title:"Family Systems Theory + Bowen", min:12, star:true, blocks:[
+{t:"learn", h:"FST'nin temel varsayımları", html:`
+<ul>
+<li>Aile, <span class="k">birbirine bağlı ve bağımlı</span> bireylerden oluşan bir sistemdir; birey tek başına anlaşılamaz.</li>
+<li><mark>Mobile analojisi</mark>: bir parçayı oynatırsan hepsi oynar. Çocuk aileyi etkiler, aile de çocuğu.</li>
+<li><span class="k">Subsystems</span>: parental, sibling, parent–child (birey de bir subsystem'dir).</li>
+<li><span class="k">Boundaries</span>: görünür (kapı) ve görünmez (çocuk aile finansını sormaz). <em>Fazla katı → izolasyon; fazla geçirgen → roller bulanıklaşır.</em></li>
+<li><span class="k">Roles &amp; rules</span>: kim teselli eder, kim disipline eder; çoğu kural söylenmez.</li>
+<li><span class="k">Homeostasis</span>: dengeyi koruma eğilimi. Sağlıklı olduğu anlamına gelmez, tanıdık olana çekimdir. Örnek: gelir düşer → eğlence harcaması kesilerek denge korunur.</li>
+<li><span class="k">Feedback</span>: aile dışarıdan gelen geri bildirimle şekillenir.</li>
+<li><mark>Circular causality</mark>: “kim başlattı?” yanlış sorudur; tekrarlayan döngüye bak.</li>
+</ul>`},
+{t:"learn", h:"Bowen: 8 kavram (1–4)", html:`
+<p>Bowen ilk kapsamlı aile sistemleri teorisini kurdu. Aileler <span class="k">kaygıyı yönetmek</span> için örüntüler geliştirir. Terapinin amacı: duygusal sistemi fark etmek ve <span class="k">differentiation</span>'ı artırmak, yani başkasını değil <mark>kendini</mark> değiştirmek.</p>
+<p class="mini">Sıra ezberi: <b>D-T-N-P / M-S-E-S</b></p>
+<ol>
+<li><span class="k">Differentiation of self</span>: bağlı kalırken ilişki baskısına kapılmadan düşünüp davranabilmek. Düşük: çocuğun ağlamasını kişisel ret sayıp tırmandırmak. Yüksek: kendi öfkesini fark edip sıcak kalmak ve net sınır koymak. <em>Bu duygusal mesafe değildir.</em></li>
+<li><span class="k">Triangles</span>: gergin ikili ilişki, kaygıyı yönetmek için üçüncü kişiyi içine çeker. Çocuk <em>messenger, confidant ya da referee</em> olur. Kısa vadede rahatlama sağlar, yükü çocuk taşır. <mark>Öğretmen de üçgene çekilebilir.</mark></li>
+<li><span class="k">Nuclear family emotional process</span>: strese tekrarlayan tepkiler (çatışma, uzaklık, eşitsiz sorumluluk, çocuğa odaklı endişe).</li>
+<li><span class="k">Family projection process</span>: ebeveynin sürekli endişesi çocuğa yansır, aşırı korumaya dönüşür.</li>
+</ol>`},
+{t:"learn", h:"Bowen 5–8 + dyads", html:`
+<ol start="5">
+<li><span class="k">Multigenerational transmission</span>: bakım inançları ve duygu yönetimi kuşaktan kuşağa geçer; tekrar edebilir ya da değişebilir.</li>
+<li><span class="k">Sibling position</span>: doğum sırası beklentileri etkileyebilir, ama sabit kişilik iddiasının kanıtı zayıf (<mark>Rohrer et al., 2015</mark>).</li>
+<li><span class="k">Emotional cutoff</span>: çözülmemiş stresi teması keserek yönetmek. Bazen koruyucudur; güvenli değilse yeniden bağlantı dayatılmaz.</li>
+<li><span class="k">Societal emotional process</span>: ekonomik güvencesizlik, ayrımcılık ve toplumsal kaygı aile içine yansır.</li>
+</ol>
+<h2>Dyads (ikili örüntüler)</h2>
+<ul>
+<li><span class="k">Pursuer–distancer</span>: biri yakınlık ister ↔ öbürü uzaklaşır; ikisi de artar.</li>
+<li><span class="k">Overfunctioner–underfunctioner</span>: biri fazla sorumluluk alır, öbürü pasifleşir. Örnek: anne yetişkin oğlunun hayatını yönetir → oğul pasifleşir → anne daha çok yönetir.</li>
+<li><span class="k">Boundary strain</span>: yetişkin duygusal destek için çocuğa yaslanır.</li>
+</ul>
+<p>Hepsinde <mark>circular causality</mark> var. Döngünün bir halkasını kırmak döngüyü değiştirir.</p>`},
+{t:"learn", h:"Sınav notu: FST'yi okul öncesine uygula", html:`
+<div class="note">Arkadaş notu: <em>“EXAM: Family systems teoriyi al, ECE'ye indirge. Nasıl kullanacağız?”</em></div>
+<ol>
+<li><span class="k">“Sorunlu çocuk” değil, örüntüye bak.</span> Kardeş doğumundan sonra geceleri uyanan çocuğu “kıskanç” diye etiketleme; aileyle hangi rutinlerin değiştiğini konuş, küçük birebir ritüeller öner.</li>
+<li><span class="k">Circular causality → döngüyü kır.</span> Endişeli ebeveyn → daha çok kontrol → çocuk direnir → ebeveyn tırmandırır. Ebeveynle birlikte bir halkayı değiştir: kurtarmak yerine iskeleyle küçük sorumluluk ver.</li>
+<li><span class="k">Triangles:</span> ayrı yaşayan ebeveynlerden birinin tarafını tutma. Çocuğu haberci yapma; yetişkinler arası doğrudan iletişimi teşvik et.</li>
+<li><span class="k">Öğretmenin differentiation'ı:</span> öfkeli veliye savunmaya geçmeden sakin kal; active listening ve I-message kullan.</li>
+<li><span class="k">Homeostasis → sabır:</span> değişim dengeyi bozar; kademeli ve sürekli ilerle.</li>
+<li><span class="k">Societal process / exosystem:</span> ekonomik stres altındaki aileyi yönlendirmeyle ve esnek saatlerle desteklemek, çocuğa sınıf stratejisinden daha çok yarayabilir.</li>
+<li><span class="k">Multigenerational:</span> kendi okul anıları kötü olan veliye sıcak ve kolay bir davetle yaklaş.</li>
+</ol>
+<p class="mini">Uyarı: bunlar yorumlama kavramlarıdır, teşhis değildir. Tek bir gözlemden aile teşhisi koyma.</p>`},
+{t:"cards", cards:[
+["Bowen'ın 8 kavramı (sırayla)?","Differentiation of self · Triangles · Nuclear family emotional process · Family projection · Multigenerational transmission · Sibling position · Emotional cutoff · Societal emotional process"],
+["Differentiation of self?","Bağlı kalırken ilişki baskısına kapılmadan düşünüp davranabilmek; duygusal mesafe değil, öz-düzenlemeyle bağlantı"],
+["Triangle?","Gergin ikili ilişkinin kaygıyı yönetmek için üçüncü kişiyi (çoğu zaman çocuğu) içine çekmesi"],
+["Family projection process?","Ebeveynin sürekli endişesinin çocuğa yönelik beklenti ve tepkileri biçimlemesi; aşırı korumaya dönüşebilir"],
+["Emotional cutoff?","Çözülmemiş stresi teması sınırlayarak ya da keserek yönetmek"],
+["Homeostasis?","Sistemin tanıdık dengeyi koruma eğilimi; sağlıklı olduğu anlamına gelmez"],
+["Boundaries: fazla katı / fazla geçirgen?","Katı → izolasyon; geçirgen (diffuse) → sorumluluklar bulanıklaşır"],
+["Circular causality?","Davranışlar birbirini karşılıklı besler; “kim başlattı” yerine döngüye bak"],
+["Overfunctioner–underfunctioner?","Biri fazla sorumluluk alır, öbürü pasifleşir; ikisi örüntüyü pekiştirir"],
+["Bowen terapisinin amacı?","Kronik kaygıyı azaltmak: duygusal sistemin farkındalığı + differentiation'ı artırmak (kendini değiştirmek)"],
+["Rohrer et al. (2015)?","Doğum sırasının kişiliği belirlediği iddiasını çürüttü (sibling position'a eleştiri)"],
+["Mobile analojisi neyi anlatır?","Bir üyedeki değişim tüm sistemi etkiler (interdependence)"]
+]},
+{t:"mcq", items:[
+{q:"Boşanmış bir anne, babaya mesajlarını çocuk üzerinden iletiyor. Bowen kavramı?", o:["Emotional cutoff","Triangles","Sibling position","Differentiation"], a:1, w:"Gergin ikili ilişki çocuğu üçüncü kişi (messenger) olarak içine çekiyor."},
+{q:"Anne çocuğun her işini yapıyor, çocuk giderek hiçbir şey denemiyor. Örüntü?", o:["Pursuer–distancer","Overfunctioner–underfunctioner","Homeostasis","Projection"], a:1, w:"Adult does more → child does less → adult feels needed. Çözüm: sorumluluğu kademeli olarak, iskeleyle aktarmak."},
+{q:"Bir baba kendi babasının sert disiplin tarzını tekrar ediyor.", o:["Multigenerational transmission","Societal emotional process","Triangles","Nuclear family emotional process"], a:0, w:"Bakım inançları kuşaklar arasında aktarılıyor."},
+{q:"Ekonomik kriz döneminde ailelerde gerginliğin artması.", o:["Sibling position","Societal emotional process","Emotional cutoff","Differentiation"], a:1, w:"Toplumsal kaygı ve güvencesizlik aile duygusal yaşamına yansıyor."}
+]}
+]});
+
+S.push({title:"Parenting styles", min:10, star:true, blocks:[
+{t:"learn", h:"İki boyut, dört stil (Baumrind; Maccoby & Martin)", html:`
+<p><span class="k">Responsiveness/warmth</span> (“Çocuğa nasıl yanıt veriyorum?”) × <span class="k">Demandingness/guidance</span> (“Ne bekliyorum, nasıl yönlendiriyorum?”)</p>
+<div class="tbl"><table>
+<tr><th></th><th>Yüksek talep</th><th>Düşük talep</th></tr>
+<tr><th>Yüksek sıcaklık</th><td><mark class="k">Authoritative</mark><br>sıcaklık + net sınır; açıklar, dinler, tutarlıdır.<br><em>“Kalmak istediğini görüyorum. 5 dakika sonra gidiyoruz.”</em></td><td><span class="k">Permissive</span><br>sıcak ama sınırı az; çatışmadan kaçmak için boyun eğer.<br><em>“Peki, bir saat daha izle.”</em></td></tr>
+<tr><th>Düşük sıcaklık</th><td><span class="k">Authoritarian</span><br>diyalogsuz kural, itaat, ceza.<br><em>“Ben öyle dedim, o kadar.”</em></td><td><span class="k">Uninvolved</span><br>az ilgi, az izleme.<br><em>“Kendin hallet.”</em></td></tr>
+</table></div>
+<p style="margin-top:12px">Stil, tek bir anki tepki değil <span class="k">tekrarlayan örüntüdür</span>. Kader değildir.</p>`},
+{t:"learn", h:"Kritik ayrım + kanıt", html:`
+<div class="grid2">
+<div><span class="k">Behavioral control</span> ✓<br>öngörülebilir sınırlar, izleme, açıklama, tutarlılık</div>
+<div><span class="k">Psychological control</span> ✗<br><mark>guilt induction · love withdrawal · shame</mark>; sevgiyi koşullu yapma</div>
+</div>
+<p style="margin-top:12px">Mekanizma: <span class="k">Connection + Guidance + Agency (autonomy support)</span> → öz-düzenleme ve içselleştirme.</p>
+<ul>
+<li><span class="k">Dornbusch et al. (1987)</span>: authoritative → daha yüksek notlar</li>
+<li><span class="k">Slicker (1998)</span>: authoritative → daha iyi uyum</li>
+<li><span class="k">Aunola &amp; Nurmi (2004)</span>: psikolojik kontrol → matematikte zayıf ilerleme (annenin sıcaklığı etkiyi değiştirir)</li>
+<li><span class="k">Bronstein et al. (2005)</span>: autonomy support → içsel motivasyon</li>
+<li><span class="k">Pinquart (2016, 2017)</span> meta-analizleri: küçük ama tutarlı ilişkiler; sert ve psikolojik kontrol daha riskli</li>
+<li><span class="k">Pinquart &amp; Kauser (2018), 428 çalışma</span>: kültürler arası farktan çok benzerlik var</li>
+<li><span class="k">Lamborn (1991), Steinberg (1989)</span>: okumadaki diğer kanıtlar için Brown &amp; Iyengar bloğuna bak (sonraki parça)</li>
+</ul>
+<p class="mini">Uyarı: “Batılı vs Asyalı” stereotipinden kaçın; yoksulluğu ihmal sanma; “associated with, on average” de.</p>`},
+{t:"learn", h:"Co-parenting + self-esteem + FE'ye çıkarım", html:`
+<p><span class="k">Co-parenting:</span> destekleyici (temel kurallarda uzlaşma, bilgi paylaşımı, çocuğu tartışmalardan uzak tutma) ↔ baltalayıcı (çocuğu haberci yapmak, ki bu bir Bowen triangle'ıdır). <mark>Zhao et al. (2022)</mark>, 41.207 katılımcı: destekleyici co-parenting → daha az dışsallaştırma (r≈−.17) ve içselleştirme (r≈−.16) sorunu.</p>
+<p><span class="k">Self-esteem:</span> Worth · Competence · Belonging. Encouragement ≠ boş övgü. “Sen dâhisin!” yerine “Parçaları döndürmeyi denedin, başka ne uyabilir?”</p>
+<h2>Sınavda FE'ye bağla</h2>
+<ol>
+<li>Sıcaklık + yapı + özerklik üzerine veli atölyesi (sınır koyma dilini modelle)</li>
+<li>Öğretmen sınıfta authoritative etkileşimi modeller ve iletişim defteriyle eve taşır</li>
+<li>İki bakımveren arasında tutarlılığı destekle</li>
+<li>Etiketleme yok; stresi azaltmak da parenting desteğidir</li>
+</ol>`},
+{t:"learn", h:"📖 Okuma: Brown & Iyengar, “Parenting Styles: The Impact on Student Achievement”", html:`
+<p class="note">Dikkat: bu okuma <b>Brown &amp; Iyengar</b>'ın. Kitabın (Family Factors and the Educational Success of Children) editörü Jeynes. Sınavda “Brown &amp; Iyengar” diye an.</p>
+<p><span class="k">Çerçeve:</span> behavioral control ve psychological control, parenting style'ın iki temel özelliği. Psychological control (Barber 1996) = müdahalecilik, suçluluk uyandırma, sevgiyi geri çekme; bağımsızlığı ve kimliği engeller.</p>
+<p><span class="k">Baumrind'den alıntılar:</span> authoritative “encourages verbal give and take and shares with the child the reasoning behind the policy.” Maccoby &amp; Martin: demandingness × responsiveness → authoritative, authoritarian, indulgent, neglectful.</p>
+<p><span class="k">Kanıt:</span></p>
+<ul>
+<li><mark>Dornbusch et al. (1987), yaklaşık 8.000 lise öğrencisi</mark>: authoritarian ve permissive stiller notlarla negatif, authoritative pozitif ilişkili.</li>
+<li><b>Lamborn et al. (1991)</b>: authoritative ailelerin çocukları en yüksek yetkinlik ve en düşük sorun düzeyinde; neglectful tam tersi. Authoritarian ailelerin çocukları itaatkâr ama benlik algıları zayıf. Indulgent ailelerin çocukları özgüvenli ama daha çok madde kullanımı ve okul sorunu yaşıyor.</li>
+<li><b>Steinberg et al. (1989)</b>: authoritativeness okul başarısını yalnızca eşlik etmekle kalmıyor, <b>kolaylaştırıyor</b>. 3 bileşeni: acceptance/warmth, behavioral supervision, psychological autonomy granting.</li>
+<li><b>Aunola &amp; Nurmi (2004)</b>: annenin yüksek psikolojik kontrolü matematikte yavaş ilerlemeyi yordadı; yüksek sevgiyle birleştiğinde en kötü sonuç.</li>
+<li><b>Bronstein et al. (2005)</b>: 5. sınıftaki dış kontrol 7. sınıfta düşük başarı ve dışsal motivasyon; autonomy support yüksek başarı ve içsel motivasyon.</li>
+<li><b>Englund et al. (2004)</b>: düşük gelirli annelerin okul öncesindeki öğretim kalitesi zekâyı doğrudan, sonraki başarıyı dolaylı etkiliyor.</li>
+<li><mark>Skowron (2005)</mark>: differentiation of self (Bowen) yüksek annelerin çocuklarının sözel ve matematik puanları daha yüksek, saldırganlıkları daha düşük. Bowen ile parenting'i bağlayan köprü.</li>
+<li><b>Hortaçsu (1995), Türk 4. sınıf öğrencileri</b>: annenin eğitimi çocuğun başarısıyla doğrudan ilişkili.</li>
+<li>Davis-Kean (2005): ebeveyn eğitimi başarıyı dolaylı etkiliyor, inançlar ve uyarıcı ev davranışları üzerinden.</li>
+<li>Pomerantz et al. (2005): “A key goal is to keep the interaction fun and loving.” (Ödev yardımında olumlu duygu.)</li>
+</ul>
+<p><span class="k">Kültür:</span> Chao (1994), Çince <em>guan</em> hem “yönetmek” hem “sevmek, ilgilenmek” demek; Batı'nın authoritarian etiketi Çin ebeveynliğini yakalamıyor. Sonuç: authoritative en olumlu stil, ama Batı tipolojileri etnik gruplar arasında güvenilir değil.</p>`},
+{t:"learn", h:"Slayt: popüler etiketler + araştırmayı eleştirel okumak", html:`
+<p><span class="k">Popüler “parenting types”, dört stil modeli değildir.</span> Bunlar sohbet başlatıcıdır; birbirini dışlamaz ve bilimsel olarak doğrulanmış kategoriler değildir:</p>
+<ul>
+<li><b>Free-range</b>: yaşa uygun bağımsızlık alanı</li>
+<li><b>Helicopter</b>: aşırıya kaçabilen yakın izleme</li>
+<li><b>Snowplow</b>: çocuk engelle karşılaşmadan engeli kaldırmak</li>
+<li><b>Lighthouse</b>: keşfe izin verirken istikrarlı rehberlik</li>
+<li><b>Attachment</b>: yakınlık ve duyarlılık vurgusu (attachment theory ile karıştırma)</li>
+<li><b>Tiger</b>: güçlü başarı talebi, yüksek yapı</li>
+</ul>
+<p><span class="k">Gelişimsel bir iddiada bulunmadan önce sorulacak 4 soru:</span> <mark>Who was studied?</mark> (okul öncesi mi, ergen mi) · <mark>Is it causal?</mark> (ilişki mi, deney mi) · <mark>How was it measured?</mark> (ebeveyn raporu mu, gözlem mi) · <mark>What else matters?</mark> (kültür, mizaç, yoksunluk, yön). Doğru dil: “associated with, on average”; “will produce this kind of child” değil.</p>
+<p><span class="k">Self-esteem'i desteklemenin 6 yolu:</span> Offer secure acceptance · Set realistic limits · Give children a voice · Encourage effort · Normalize mistakes · Build competence. Örnek: “You are so naughty” yerine “Hitting hurts. I'll help you calm down, then we repair.”</p>
+<p><span class="k">Take-home framework:</span> Connection · Structure · Autonomy · Coordination.</p>`},
+{t:"mcq", items:[
+{q:"“Yemeğini bitirmezsen baban seni sevmez.”", o:["Behavioral control","Psychological control (love withdrawal)","Authoritative","Permissive"], a:1, w:"Sevgiyi koşullu yapmak psikolojik kontroldür ve risk faktörüdür."},
+{q:"5 yaşındaki çocuk meyve suyunu döktü: “Kaza olur. Birlikte silelim, küçük sürahiyle tekrar dene.”", o:["Authoritarian","Permissive","Authoritative","Uninvolved"], a:2, w:"Sıcaklık + sorumluluk + öğrenme fırsatı."},
+{q:"“Boş ver, bundan sonra her şeyi ben yaparım.”", o:["Permissive","Authoritative","Authoritarian","Uninvolved"], a:0, w:"Sıcak ama sınır ve beklenti yok."},
+{q:"Pinquart & Kauser (2018) ne buldu?", o:["Authoritarian Asya'da en iyisi","Kültürler arası farktan çok benzerlik","Parenting'in etkisi yok","Sadece babalar önemli"], a:1, w:"428 çalışma: benzerlikler baskın, etki büyüklüklerinde gerçek varyasyon var."}
+]},
+{t:"cards", cards:[
+["Parenting'in iki boyutu?","Responsiveness/warmth × Demandingness/control"],
+["4 stil?","Authoritative (W+D+) · Authoritarian (W−D+) · Permissive (W+D−) · Uninvolved (W−D−)"],
+["Psychological control'ün 3 biçimi?","Guilt induction · Love withdrawal · Shame induction"],
+["Dornbusch (1987)?","Authoritative parenting ↔ daha yüksek notlar"],
+["Aunola & Nurmi (2004)?","Psikolojik kontrol ↔ matematikte zayıf ilerleme; annenin sıcaklığı etkiyi değiştirir"],
+["Zhao et al. (2022)?","Destekleyici co-parenting ↔ daha az dışsallaştırma (−.17) ve içselleştirme (−.16) sorunu; 41.207 kişi"],
+["Self-esteem 3 bileşeni?","Worth · Competence · Belonging"]
+]}
+]});
+
+S.push({title:"Positive home–school partnership + roller", min:8, star:true, blocks:[
+{t:"learn", h:"Ortaklığın iki unsuru ve üç ilkesi (Lyons et al., Ch.1)", html:`
+<div class="grid2">
+<div><span class="k">Information exchange</span><br>açık ve <mark>iki yönlü</mark> bilgi akışı (ev→okul ve okul→ev)</div>
+<div><span class="k">Interpersonal relations</span><br>doğrudan, rahat, saygılı tanışıklık</div>
+</div>
+<p style="margin-top:12px">Zincir: <span class="k">genuine welcome → mutual trust → willing participation → shared goals</span></p>
+<p><span class="k">3 ilke:</span> <mark>Reach all parents · Keep exchange two-way · Enable parent leadership</mark>. Koşullar: Access · Voice · Ownership.</p>
+<p><span class="k">Bilgi alışverişi teknikleri:</span> ev ziyareti, telefon, veli-öğretmen görüşmesi, ziyaret günü, veli odası/kütüphanesi, anket (ASK→REVIEW→RESPOND→REPORT BACK), bülten, takvim, <span class="k">iletişim defteri</span>, portfolyo, veli el kitabı, dijital kanal (dijital olmayan alternatifiyle birlikte).</p>
+<p><span class="k">İlişki teknikleri:</span> yemekler, piknik/gezi, çocuk sergisi, oryantasyon günü, veli çevrimiçi grupları.</p>
+<p><span class="k">Tutumlar:</span> güçlü yanlardan başla · eşit ortak · suçlama yok · iki ortam da değerli · ortak karar · süreklilik.</p>
+<div class="note">Kapanış cümlesi: <em>FE is fundamentally relational, not merely procedural.</em></div>`},
+{t:"learn", h:"Yönetici ve öğretmen rolleri + çatışma (Coletta Ch.2 & 4)", html:`
+<p><span class="k">Yönetici:</span> bağlamı kurar (vizyon, zaman) · kapasite geliştirir (hizmet içi eğitim) · motive eder ve koordine eder · kaynak bulur · arabuluculuk yapar · toplumla bağ kurar.</p>
+<p><span class="k">Öğretmen:</span> (1) çocuğun gelişimini destekler, (2) <mark>aileyle ortaklık kurar</mark>. Ayrıca aileleri tanır, kaynaklara yönlendirir, etkinlik düzenler, takip eder. Beceriler: içten ilgi, öz-farkındalık, active listening, empati, yargısızlık, gizlilik.</p>
+<p><span class="k">Ortak:</span> açık ve samimi okul · açık kapı politikası · görünür olmak · velinin değerli hissetmesi · düzenli okul etkinlikleri.</p>
+<p><span class="k">Çatışma:</span> Maslow (temel ihtiyacı karşılanmamış aile katılamaz) · <span class="k">active listening</span> · <span class="k">I-message</span> (davranış → etkisi → duygu/istek) · güç türleri: exploitative, manipulative, competitive, nutrient, <mark>integrative</mark> (en iyisi) · 6 adım: identify → brainstorm → evaluate → decide → implement → review.</p>
+<p><span class="k">Coletta Ch.4:</span> parent profile + community profile · değerlendirmenin 4 yolu: goal attainment, child outcomes, parent outcomes, parent appraisal · Task-Relevant Maturity (yönlendirmeyi katılımcının becerisine göre ayarla).</p>`},
+{t:"learn", h:"Slayt 3c: öğretmen öz-değerlendirmesi, ulaşma ipuçları, engellerin kaynağı", html:`
+<p><span class="k">Öğretmen veliye ne kadar değer veriyor?</span> Kendine sor: aileleri önceden belirlenmiş bir role sokmadan oldukları gibi kabul ediyor muyum? İlişki kurup verdiğim sözü tutuyor muyum? Velilerden gerçekten öğreniyor muyum, yoksa sadece öğretiyor muyum? Çocuğun ev deneyimini öğrenip güçlü yanlarını aileye iletiyor muyum?</p>
+<p><span class="k">Velilere ulaşmak için 8 ipucu:</span> school newsletters · classroom newsletters · short surveys · school website · email/messages · meeting agendas (önceden gündem, sonra tutanak) · telephone calls · language access (tercüman).</p>
+<p><span class="k">Düşük katılımın 3 kaynağı (problem solver olarak):</span></p>
+<ul>
+<li><b>Family circumstances</b>: zaman, ulaşım, engellilik, dil, karşılanmamış temel ihtiyaçlar</li>
+<li><b>School capacity</b>: dağınık iletişim, az materyal, grup yönetme becerisinin zayıf olması, destekleyici denetim eksikliği</li>
+<li><b>Relationship &amp; expectations</b>: ebeveyn bilgisinin görmezden gelinmesi, kültürel değer farkı, hemen sonuç ya da uzman çözümü beklentisi</li>
+</ul>
+<p>Yanıt: aileyi suçlamak değil, koşulları anlayıp ortaklığı ayarlamak.</p>
+<p><span class="k">FE etkinliklerinin 2 ana hedefi (Coletta):</span> (1) <b>Children</b>: veli katılımı, iş birliği ve geri bildirimle eğitim deneyimini iyileştirmek. (2) <b>Families</b>: ebeveynin becerisini ve özgüvenini güçlendirmek, kişisel gelişimini tanımak. Süreç: needs assessment → activities → evaluation.</p>
+<p><span class="k">Parent profile:</span> hane (kompozisyon, çocuk sayısı ve yaşları) · zaman ve iş (meslek, çalışma saatleri) · yaşam koşulları (konut, ulaşım) · kültürel bağlam (dil, göç, öncelikler). <span class="k">Community profile:</span> sağlık, eğitim, istihdam, toplum yaşamı. “Plan WITH families, not FOR them”; gizliliği koru.</p>
+<p><span class="k">Değerlendirme döngüsü:</span> Goals → Barriers → Solutions → Results → Revision. Ölçme: gözlem, öncesi/sonrası, birden çok bakış açısı.</p>
+<p><span class="k">Liderlik:</span> high/low task × high/low relationship (4 kombinasyon) + <b>Task-Relevant Maturity</b>: veli becerisi düşükse daha fazla yönlendirme, kapasite arttıkça azalt.</p>
+<p><span class="k">Sürdürülebilir program sırası:</span> <mark>RELATE → CO-DESIGN → RESOURCE → IMPLEMENT → EVALUATE</mark>. Shared responsibility + clear process + family voice.</p>`},
+{t:"learn", h:"📖 Okuma: Coletta Ch.2 “Roles of Administrator & Teacher” (Q1'de kaynak!)", html:`
+<p><span class="k">Ana iddia:</span> veli katılımı bir <b>“total staff effort”</b>. Bir kişi koordine eder ama tüm personelin eğitimi gerekir. Veliler en çok sınıf öğretmeniyle konuşmak ister, çünkü çocuğun okul deneyimini en iyi o bilir.</p>
+<p><span class="k">Yönetici:</span> insan ilişkileri, çatışma çözümü ve ortak problem çözmede yetkin bir arabulucu ve lider. Veliyi karar sürecine katar, hizmet içi eğitim yürütür. Partnerliği “a way of life” yapar.</p>
+<p><span class="k">Öğretmen:</span></p>
+<ul>
+<li>İlk rolü zengin bir sınıf ortamı kurmak: “An exciting classroom is the primary method used to stimulate home participation.”</li>
+<li>Öğretmen bir <b>“helper”</b>dır ve ebeveyne 3 konuda yardım eder: (1) çocukla olumlu ilişki kurmak, (2) gelişimi destekleyen etkinlikler yapmak, (3) kendisi ve çocuğu için hedef belirlemek.</li>
+<li><b>Authority, authoritarian değil.</b> 4 beceri: model olmak; veliyi küçümsemeden yüzleştirmek; dinleyip netleştirmek; çatışmayı müzakere etmek.</li>
+<li>Öğretmen ebeveynin rolünü “supports and supplements… rather than supplants” (Schaefer).</li>
+<li>Yardımcının özellikleri (Brammer, Rogers): öz-farkındalık, model olmak, insana ilgi, etik; empati, sıcaklık, içtenlik, koşulsuz olumlu saygı, somutluk; active listening; I-messages.</li>
+</ul>
+<p><span class="k">Veli katılımcısının 8 ek görevi:</span></p>
+<ol>
+<li>Toplum kaynaklarını öğrenmek.</li>
+<li>Aileleri hizmetlerden haberdar etmek.</li>
+<li>Velilerden içgörü almak.</li>
+<li>Velilerin özel beceri ve ilgilerini belirlemek.</li>
+<li>Potansiyel veli liderlerini bulmak.</li>
+<li>Veli ve personele oryantasyon ve eğitim vermek.</li>
+<li>Veli farkındalık gruplarını yönetmek.</li>
+<li>Personeli bilgilendirmek.</li>
+</ol>
+<p><span class="k">Engeller ve çatışma:</span></p>
+<ul>
+<li>Düşmanca görünen velinin kötü okul anıları olabilir (Hymes: bazı sistemlerde çocukların %25'i 1. sınıfta kalıyordu).</li>
+<li><b>Educator Perceptions of Parents ölçeği</b>: 10 karşıt çift (Apathetic–Concerned, Obstacles–Resources…). “Educators draw to themselves that which they believe will occur.”</li>
+<li><mark>Maslow: “We often judge parents at level IV without considering deprivation at levels I, II and III.”</mark></li>
+<li>10 çatışma kaynağı: aile sorunlarının çokluğu, değişimin yavaş olması, dağınık katılım, grup becerisi eksikliği, değer çatışması (disiplin, otonomi ya da itaat), denetim eksikliği, çocuğun yanında soru sormak, öğretmenden uzman olmasını beklemek, “Neden…?” sorusu (suçlar gibi).</li>
+<li>“İlgisiz” veli için çözüm tablosu: birkaç işte çalışıyorsa toplum kaynakları ve bakıcı; okuldan korkuyorsa ev ziyareti; ulaşım yoksa araç paylaşımı; gerekli hissetmiyorsa görev listesi; Türkçe bilmiyorsa iki dilli arkadaş.</li>
+<li>Active listening (Gordon): “Once the problem is identified, the parent has advanced fifty per cent toward the solution.”</li>
+<li>May'in 5 güç türü; ciddi çatışmada <b>integrative</b>.</li>
+</ul>
+<p class="mini">“Parents and teachers agree on more than they have been willing to admit.”</p>`},
+{t:"learn", h:"📖 Okuma: Coletta Ch.4 “Strategies for Organizing & Implementing”", html:`
+<p><span class="k">2 hedef:</span> (1) veli katılımıyla çocuğun programını geliştirmek; (2) ebeveynlik becerisi ve kişisel gelişim için destek sistemi kurmak. Johnson (1975): veliler “the subjects… not the objects”; planlama velilerle yapılır, onlar için değil.</p>
+<p><span class="k">Parent profile:</span> yaş, tek ebeveynli aile, dil, meslek, çalışma saatleri. Adair: “8 parents who work at night, 6 on weekends, 10 on shifts… so a fixed monthly meeting is not satisfactory.” Örnek merkezde 50 ailede yalnızca 25 baba var → erkek öğretmen ve gönüllü bul. Toplum kaynakları bazen sadece “paper assets” (kâğıt üstünde).</p>
+<p><span class="k">5 bileşen:</span> home–school communication · classroom tasks · parent awareness · policy making · home-based curriculum.</p>
+<p><span class="k">4 değerlendirme yolu:</span> hedefe ulaşma · çocuğun öğrenmesi ve benlik algısı · ebeveyn davranış değişimi · velinin kendi değerlendirmesi.</p>
+<p class="mini">Uyarı: veliler, programın onlardan beklediği yönde değiştiklerini söyleme eğiliminde (Home Start). Öz-raporu dikkatle kullan.</p>
+<p><span class="k">Hedef belirleme 6 adımı:</span> değerlendir → hedef koy → önceliklendir → engelleri listele → çözümleri listele → ödülleri belirle.</p>
+<p><span class="k">Liderlik:</span> Hersey-Blanchard, task-relevant maturity. Grubun olgunluğu düşükse high task ve low relationship; olgunluk arttıkça low task ve low relationship. “Çoğu veli grubu high relationship stiliyle en iyi çalışır.”</p>
+<p><span class="k">Katılımı canlandırmak için 4 strateji:</span></p>
+<ol>
+<li>Velinin ihtiyacını karşılayan ilk toplantı.</li>
+<li>İki yönlü iletişim.</li>
+<li>Veliyi motive etmek (öneri kutusu, takdir, ulaşım ve bakıcı desteği, ev ziyareti).</li>
+<li>Yaratıcı fikirler (Sibling Day, babalara spagetti yemeği, veli alanı, açık kapı).</li>
+</ol>
+<p>Hess &amp; Croft: öğretmen, özellikle düşük gelirli ailelerle çalışırken “take the initiative”. “Sincerity is the key.”</p>`},
+{t:"cards", cards:[
+["Coletta Ch.2: öğretmenin ebeveyne yardım ettiği 3 alan?","Çocukla olumlu ilişki · gelişimi destekleyen etkinlikler · kendisi ve çocuğu için hedef belirleme"],
+["Authority vs authoritarian öğretmenin 4 becerisi?","Model olmak · küçümsemeden yüzleştirmek · dinleyip netleştirmek · çatışmayı müzakere etmek"],
+["Coletta'nın Maslow uyarısı?","Velileri 4. basamakta (özsaygı) yargılıyoruz; 1–3. basamaktaki yoksunluğu düşünmeden"],
+["Coletta Ch.4: 5 bileşen?","Home–school communication · classroom tasks · parent awareness · policy making · home-based curriculum"],
+["Düşük katılımın 3 kaynağı?","Family circumstances · School capacity · Relationship & expectations"],
+["Coletta: FE'nin 2 ana hedefi?","Çocuğun eğitim deneyimini iyileştirmek + ebeveynin becerisini, özgüvenini ve kişisel gelişimini güçlendirmek"],
+["Sürdürülebilir FE program sırası?","Relate → Co-design → Resource → Implement → Evaluate"],
+["Task-Relevant Maturity?","Liderin yönlendirme düzeyini katılımcının görevdeki becerisine göre ayarlaması"],
+["Ortaklığın 2 unsuru?","Information exchange (iki yönlü) + Interpersonal relations"],
+["Ortaklığın 3 ilkesi?","Reach all parents · Keep exchange two-way · Enable parent leadership"],
+["Anket döngüsü?","Ask → Review → Respond → Report back"],
+["En iyi güç türü?","Integrative: birlikte çalışıp ortak çözüm üretmek"],
+["I-message yapısı?","Davranış → etkisi → duygu/istek (suçlamadan)"],
+["Coletta'ya göre değerlendirmenin 4 yolu?","Goal attainment · Child outcomes · Parent outcomes · Parent appraisal"],
+["Çatışma çözümünün 6 adımı?","Identify → Brainstorm → Evaluate → Decide → Implement → Review"]
+]}
+]});
+
+S.push({title:"5 FE türü + Epstein", min:10, star:true, blocks:[
+{t:"learn", h:"Lyons, Robbins & Smith: 5 katılım türü", html:`
+<p class="mini">Ayırt etmenin anahtar sorusu: <b>Ebeveyn neye katkı veriyor ya da neye katılıyor?</b></p>
+<ol>
+<li><span class="k">School support</span>: doğrudan akademik öğretim yapmadan okulu destekleyen gönüllü işler. Amaç: ekonomik, pratik, politik ya da moral destek; <mark>erişilebilir ilk adım</mark>. Örnek: kutlama, kermes, gezi refakati, meslek/hobi paylaşımı, tamir.</li>
+<li><span class="k">Parent education</span>: ebeveynin bilgi ve becerisini geliştiren atölye, kurs ve kaynaklar. Akademik (sesli okuma), akademik olmayan (dijital beceri, el işi), iyi oluş (sağlık, beslenme).</li>
+<li><span class="k">Home-based instruction</span>: ebeveynin evde çocukla yaptığı, okulla bağlantılı, <span class="k">planlı ve tutarlı</span> öğrenme etkinlikleri. Örnek: make it–take it, haftalık fikir kartları, etkinlik paketleri, kitap/oyuncak kütüphanesi.</li>
+<li><span class="k">Instruction at school</span>: ebeveyn sınıfta gönüllü ya da ücretli yardımcı olarak öğretime doğrudan katılır. Eğitim ve gözetim şart; öğretmenin mesleki sorumluluğu sürer.</li>
+<li><span class="k">Advisory groups</span>: okulun kararlarına (müfredat, bütçe, personel, veli etkinlikleri) danışmanlık eden organize veli grupları. Başarı ölçütü: <mark>etkinin görünür olması</mark>.</li>
+</ol>`},
+{t:"learn", h:"Slayt 3d: 5 ortak nitelik + her türün “neden önemli”si", html:`
+<p><span class="k">Her katılım türü için 5 ortak nitelik:</span> <mark>Relational</mark> (davetten önce güven) · <mark>Two-way</mark> (dinle, birlikte planla) · <mark>Learning-linked</mark> (çocuğun gelişimine bağlı) · <mark>Equitable</mark> (dil, zaman ve erişime uyarla) · <mark>System-supported</mark> (personel rolleri, rutinler, kaynak, takip). Tür değişebilir; karşılıklılık ve erişilebilirlik değişmez.</p>
+<ul>
+<li><b>School support, neden önemli:</b> tanıdık etkinlikler okula girişi rahatlatır; kısa görevler uzun süre ayıramayan veliye giriş noktası olur; etkinlikler aileleri öğretmen ve diğer velilerle tanıştırır. <em>Genelde kısa süreli; sınıf ya da okul düzeyinde; daha derin katılıma kapı.</em></li>
+<li><b>Parent education:</b> yaşam boyu öğrenmeyi ve ebeveynin kendi gelişimini onaylar; özgüveni artırır; toplum kaynaklarına bağlar. Konular velilerle birlikte seçilir. Başarı: çeşitli veliler, gerçek ihtiyaç, katılanın yeni bir beceri ya da özgüvenle ayrılması. Türler: workshops, formal education classes, field trips, sharing materials.</li>
+<li><b>Home-based instruction:</b> ebeveyni çocuğun en erken ve en sık öğrenme ortağı olarak tanır; ev ve okul becerilerini bağlar; ebeveynin sahiplenmesini artırır. <em>Öğretmen yönlendirir ve modeller; etkinlikler günlük hayatın içinde ve aylarca sürer.</em> Türler: Make It–Take It, idea lists, activity packages, resource center, home tutoring.</li>
+<li><b>Instruction at school:</b> veli öğretimi ve beklentileri yerinde görür; küçük grup desteği sağlanır; öğrendiğini eve taşır. <em>Rol açık olmalı; eğitim ve gözetim şart; öğretmen sorumluluğu sürer.</em> Türler: tutoring, leading whole class, preparing materials, developing lesson plans; “grading children” tarihsel bir örnektir ve ancak açık bir politika altında olur.</li>
+<li><b>Advisory groups:</b> veliler okul verisinin vermediği bilgiyi getirir; karar ve ödünleşimleri anlar; aidiyet ve ortak sorumluluk güçlenir. <em>Üyelere oryantasyon gerekir; yıl boyu sürer; yetkisi politikaya bağlıdır.</em> Danışmanlık alanları: curriculum, budget, personnel, parent activity. Danışma, karar vericiler veli önerisinin nasıl kullanıldığını açıklarsa anlam kazanır.</li>
+</ul>`},
+{t:"learn", h:"📖 Okuma: Lyons et al. Ch.3–7 + AÇEV (her türün başarı ölçütü)", html:`
+<ul>
+<li><b>School support (Ch.3)</b>: “parent volunteer activities that do not involve the academic instruction of children”; amaç okula “economic, political or moral support”.
+  <ul>
+  <li>6 tür: fund-raising, direct assistance, child supervision, resource teachers, political support, social/cultural events.</li>
+  <li>“Volunteering may be a parent's first step toward other forms of involvement.”</li>
+  <li>Başarı: “most parents should be involved in at least one activity”; geniş katılım birkaç gönüllünün tükenmesini önler.</li>
+  <li>Örnek: kermesten elde edilen gelirle GED kursuna gelemeyen velilerin bakıcı ve yol masrafı karşılandı.</li>
+  </ul></li>
+<li><b>Parent education (Ch.4)</b>: “Learning experiences that help a parent function better ultimately help the child.”
+  <ul>
+  <li>Başarının 3 ölçütü: (1) velilerin çoğu en az bir etkinliğe katılır; (2) etkinlik velinin ihtiyacını hedefler; (3) veli değerli bir şey öğrendiğini hisseder.</li>
+  <li>Veli odaları katılımı artırıyor görünüyor.</li>
+  </ul></li>
+<li><b>Home-based instruction (Ch.5)</b>: “Parents are their children's first teachers… the child needs to have all 'teachers' working together.”
+  <ul>
+  <li>Başarı: velilerin çoğu katılır ve çocuk için olumlu sonuç olur. “Students whose parents help them at home not only learn more, but also have more positive attitudes toward learning. Attendance is better…”</li>
+  <li><mark>Evde öğretimin engelleri: “gerçek öğretim okulun işi” tutumu; dil sorunu; öğrettiğinin yanlış olacağı korkusu; çocuk gelişimi bilgisi eksikliği; eve gelen materyali anlamamak; öğretmenlerin velinin becerisinden şüphe etmesi.</mark></li>
+  <li>Eğitimin 4 gereği: materyal yapmayı ve kullanmayı göster, geniş fikir yelpazesi sun, kaynak ver, veli-öğretmen iletişimini vurgula.</li>
+  </ul></li>
+<li><b>Instruction at school (Ch.6)</b>: “Our study showed that parent aides offer important benefits.” Veli öğretim sürecini öğrenir; aide öğretmenin “right arm”ı olur; farklı dil ve kültürden çocuklarla köprü kurar.
+  <ul>
+  <li>Başarı: çoğu sınıfta aide var, öğretimde görev alıyor, öğretmenle düzenli çalışıyor, süreklilik var (“two or three parents who work at prescribed times… are preferable to many parents who constantly come and go”), etki var.</li>
+  <li>Eğitim olmazsa “teachers often doubt the aides' ability.”</li>
+  </ul></li>
+<li><b>Advisory groups (Ch.7)</b>: en aktif gruplar 4 alanda karar alıyor (müfredat, bütçe, personel, veli etkinlikleri).
+  <ul>
+  <li>Düzenli olmalı; tek seferlik değil.</li>
+  <li><mark>“Intensive training… is a key feature separating successful from unsuccessful advisory groups.”</mark></li>
+  <li>Rol yazılı tanımlanınca yönetici ile veli arasındaki gerilim belirgin biçimde azalıyor.</li>
+  <li>Üyelik tüm velileri temsil etmeli.</li>
+  </ul></li>
+</ul>
+<p><span class="k">AÇEV Bölüm 9, planlama süreci (8 adım):</span></p>
+<ol>
+<li>Aile katılımı ekibi kur.</li>
+<li>Okulun aile katılımı anlayışını tüm paydaşlarla birlikte tanımla.</li>
+<li>Önce personeli eğit.</li>
+<li>Farklı türleri kapsayan bir çerçeve oluştur.</li>
+<li>Mevcut etkinlikleri incele.</li>
+<li>3 yıllık eylem planı yap (“gerçek katılım zaman alır”).</li>
+<li>7 harcı gözeten 1 yıllık detaylı plan yap.</li>
+<li>Değerlendir, paylaş, kutla.</li>
+</ol>
+<p class="mini">Goodson &amp; Hess'in 4 veli katılımı türü: çocuğun daha etkili öğretmeni · daha iyi ebeveyn · okula destek kaynağı · politika yapıcı.</p>`},
+{t:"learn", h:"Hocanın vurguları + Epstein", html:`
+<div class="note"><span class="k">Önce school support ile başla.</span> Ailenin ilk deneyimi rahat ve sıcak olmalı; öğretimsel türlere sonra geç.</div>
+<h2>Home-based instruction (hoca notu)</h2>
+<ul>
+<li>Ev ortamlarını <mark>nötrleştir ve eşitle</mark> (neutralize &amp; equalize)</li>
+<li>Ev ile okulu <span class="k">paralel</span> hale getir</li>
+<li>Odak <span class="k">çocuğun öğrenmesi</span>, ebeveynin değil!</li>
+<li><span class="k">Anlamlı ve oyunsu</span> olsun; evde ikinci bir okul günü olmasın</li>
+</ul>
+<h2>Epstein'ın 6 türü</h2>
+<ol>
+<li><b>Parenting</b>: “Help all families establish home environments to support children as students.”</li>
+<li><b>Communicating</b>: okuldan eve ve evden okula etkili iletişim.</li>
+<li><b>Volunteering</b>: “Recruit and organize parent help and support.” Gönüllü, okulun hedeflerini “any place, any time” destekleyen herkestir.</li>
+<li><b>Learning at home</b>: ödev ve müfredatla ilgili ev etkinlikleri. <mark>“Help” = “encouraging, listening, reacting, praising, guiding, monitoring, and discussing, not 'teaching' school subjects.”</mark></li>
+<li><b>Decision making</b>: “a process of partnership… not just a power struggle.”</li>
+<li><b>Collaborating with community</b>: toplum kaynaklarını entegre etmek.</li>
+</ol>
+<p class="mini">Epstein'ın zorluk vurgusu: yalnızca gelebilen birkaç aileye değil, “all families who want it or who need it” ulaşmak.</p>
+<p class="mini">Epstein bir sınıflandırmadır; 7 ingredients ise uygulama çerçevesidir. Her etkinlik 7 ingredients'tan geçer.</p>`},
+{t:"mcq", items:[
+{q:"Veliler bayram kutlamasında stant kuruyor.", o:["School support","Parent education","Home-based instruction","Advisory group"], a:0, w:"Doğrudan öğretim yok; okula pratik ve moral destek."},
+{q:"Veliler okulda “evde sesli kitap okuma” atölyesine katılıyor.", o:["Instruction at school","Parent education","School support","Advisory group"], a:1, w:"Ebeveynin bilgi ve becerisi gelişiyor."},
+{q:"Her cuma çocuk eve kitap ve oyun kartlı bir “hikâye çantası” götürüyor.", o:["Home-based instruction","Parent education","School support","Instruction at school"], a:0, w:"Okulla bağlantılı, planlı ve tutarlı ev etkinliği."},
+{q:"Bir veli sınıfta küçük grupla sayı oyunu oynatıyor.", o:["School support","Instruction at school","Advisory group","Home-based"], a:1, w:"Öğretime doğrudan katılım (öğretmen gözetiminde)."},
+{q:"Veli temsilcileri bütçe önceliklerine dair öneri sunuyor.", o:["Advisory group","School support","Parent education","Instruction at school"], a:0, w:"Okul kararlarına veli sesi."}
+]},
+{t:"cards", cards:[
+["5 FE türü?","School support · Parent education · Home-based instruction · Instruction at school · Advisory groups"],
+["Epstein 6?","Parenting · Communicating · Volunteering · Learning at home · Decision making · Collaborating with community"],
+["Neden önce school support?","Kısa ve tanıdık; ailenin ilk deneyimi rahat ve sıcak olur; daha derin katılıma kapı açar"],
+["Home-based instruction için 4 hoca notu?","Ev ortamlarını eşitle · ev ile okulu paralel yap · odak çocuğun öğrenmesi · anlamlı ve oyunsu"],
+["Advisory group başarı kriterleri?","Önemli konular · düzenli toplantı · etkinin görünür olması · temsil gücü"]
+]}
+]});
+
+S.push({title:"7 Vital Ingredients: rol ve önem", min:12, star:true, blocks:[
+{t:"learn", h:"Sıra ve çerçeve", html:`
+<p><span class="k">Lyons, Robbins &amp; Smith</span>, <mark>federal fonlu 57 projeyi</mark> inceleyerek 7 vital ingredient'ı belirledi. Bunlar bir etkinlik türü değil, <span class="k">her etkinliğin geçmesi gereken uygulama çerçevesi</span>dir.</p>
+<p>Ana mesaj: <em>Katılım, aileler umursamadığı için değil, süreç planlanmadığı, sahiplenilmediği ve desteklenmediği için başarısız olur.</em></p>
+<ol>
+<li><span class="k">C</span>oordinate: koordinasyon sağla</li>
+<li><span class="k">A</span>ssess: ihtiyaç ve kaynakları belirle</li>
+<li><span class="k">S</span>pecify: veli rollerini tanımla ve ilet</li>
+<li><span class="k">R</span>ecruit: velileri davet et, seç ve görevlendir</li>
+<li><span class="k">T</span>rain: velileri ve personeli eğit</li>
+<li><span class="k">E</span>stablish: iletişim kanallarını kur</li>
+<li><span class="k">S</span>upport: süren etkinlikleri destekle</li>
+</ol>
+<p class="mini">Ezber: <b>C-A-S-R-T-E-S</b>. “Can A Small Room Teach Every Student?”</p>`},
+{t:"learn", h:"📖 Okuma: Lyons Ch.2'deki çalışma bulguları (Q2'nin kanıtı!)", html:`
+<p>Lyons, Robbins &amp; Smith'in <b>Study of Parental Involvement</b> çalışmasında başarılı okul bölgelerinin hepsi aynı adımları izliyordu. Bileşenlere “vital” denmesinin nedeni şu: “critical to 'recipes' for success” ve “important no matter what parental involvement activity is being developed.”</p>
+<ol>
+<li><b>Coordination</b>: <mark>katılımın “most widespread and successful” olduğu bölgelerde ana etken, doğrudan sorumluluğu olan bir kişinin çalışmasıydı.</mark> Koordinatör “ought to play a key role in making certain that all of the other 'vital ingredients' are satisfied.”</li>
+<li><b>Needs &amp; resources</b>: ihtiyaçlar göz ardı edilince “parental involvement suffered”; önce bilgi toplanan yerlerde “tended to thrive.” İhtiyaç analizi etkinliğin gerçek bir amaca hizmet etmesini, kaynak analizi yeterli veli ve personel olmasını sağlar. “More important than the method is that you tap both the needs and resources of parents and professional staff.”</li>
+<li><b>Roles</b>: roller varsayıldığında “confusion and conflict arose”. Politika metinleri “blueprints for action” işlevi görür. “People are more willing to volunteer if they know exactly what they are getting into.” <em>İlk 3 bileşen planlama ve tasarım aşamasıdır.</em></li>
+<li><b>Recruitment</b>: <mark>“Simply publicizing opportunities is not enough… The most common method of effective recruitment seems to be extensive personal contact.”</mark> Seçim “availability, enthusiasm and probable skill levels”a göre yapılır; koordinatör “matchmaker” rolündedir. AÇEV: “En etkili yolun kişisel temas olduğu bilinmektedir.”</li>
+<li><b>Training</b>: <mark>“One of the study's most clear-cut findings was that effective, well-planned training lies at the heart of successful parental involvement.”</mark> Hem hizmet öncesi hem hizmet içi, hem veli hem personel için. Öğretmenlerin “velilerle uğraşmak çok zaman alır” kaygısını da giderir.</li>
+<li><b>Communication</b>: 3 kanal: okul↔veli, personel↔veli (“build rapport”), veliler arası (“an important source for cross-fertilization of ideas”). “When parents realize that their contributions are effective and appreciated, they are more likely to continue.”</li>
+<li><b>Support</b>: materyal desteği (bakıcı, ulaşım, veli odası, takdir) ve izleme. <mark>“The more frequent the feedback from monitoring the better; potential problems are not allowed to take root.”</mark> Destek hizmetleri şu mesajı da verir: “their activities are considered important.”</li>
+</ol>
+<p class="mini">Lyons Ch.1: 7 bileşeni uygulamak, ev-okul iletişimi açık ve karşılıklı güven varsa kolaylaşır. “People will be more likely to participate if they already trust one another.” AÇEV Türkçesi: <b>7 Temel Harç</b>; koordinatörün rolleri kolaylaştırıcılık, arabuluculuk (bilgi sağlayıcı), yöneticilik, eğitmenlik.</p>`},
+{t:"learn", h:"1–4: rol → önem", html:`
+<p><span class="k">1. Coordination</span>. Rol: <mark>sahiplenme ve tutarlılık</mark>. Koordinatörün 4 rolü var: facilitator (engelleri kaldırır), provider of information (ev, okul ve toplum arasında köprü), administrator (planlar, kayıt tutar, takip eder), trainer. <em>Önem:</em> sorumlu kişi yoksa mesajlar tutarsızlaşır, takip yapılmaz, etkinlik söner. Diğer altısı buna dayanır.</p>
+<p><span class="k">2. Assess needs &amp; resources</span>. Rol: <mark>eşleştirme</mark>. “Ne gerekli?” ve “ne mevcut?” sorularını formal (anket) ve informal (sohbet, ev ziyareti) yollarla yanıtlar. <em>Önem:</em> “haritalamadığını eşleştiremezsin.” İhtiyaç analizi hedefi anlamlı, kaynak analizi uygulanabilir kılar. Örnek: anket akşam seanslarının daha uygun olduğunu gösterir. Program aileler <em>için</em> değil aileler<em>le</em> planlanır.</p>
+<p><span class="k">3. Specify roles</span>. Rol: <mark>netlik ve bağlılık</mark>. Görev, süre ve sınırlar; veli, personel ve yönetimle birlikte kararlaştırılır. <em>Önem:</em> belirsiz rol kaygılı ya da pasif veli yaratır, net rol kendinden emin ve bağlı veli. Veli–personel gerginliğini de önler.</p>
+<p><span class="k">4. Recruit, select, assign</span>. Rol: <mark>kapsayıcılık ve uyum</mark>. Kişisel davet, şeffaf seçim, beceri ve müsaitliğe göre görev. <em>Önem:</em> afiş asmak davet değildir; <span class="k">recruitment is relational</span>. Hep aynı görünür küçük grubun katılmasını önler, babalara, çalışan ebeveynlere ve göçmen ailelere ulaşır.</p>`},
+{t:"learn", h:"5–7: rol → önem", html:`
+<p><span class="k">5. Train parents &amp; staff</span>. Rol: <mark>kapasite geliştirme</mark>. Katılımdan önce oryantasyon, katılım sırasında koçluk; hem veliye hem öğretmene (Mapp &amp; Bergman: <em>dual capacity</em>). <em>Önem:</em> katılım öğrenilen bir davranıştır; iyi niyet yetmez. Eğitilmiş veli kendini yetkin hisseder (modellenen ortak okuma tekniği gibi); eğitilmiş öğretmen jargonsuz konuşur ve ailenin bilgisine saygı duyar.</p>
+<p><span class="k">6. Communication channels</span>. Rol: <mark>iki yönlü akış ve güven</mark>. Okul↔veli, personel↔veli ve <span class="k">veli↔veli</span>. <em>Önem:</em> aile yanıt veremiyorsa ya da etkinliğin nasıl gittiğini bilmiyorsa güven ve katılım düşer. Veli ağları, aileler arasında çözüm ve destek paylaşımı sağlar.</p>
+<p><span class="k">7. Support ongoing activities</span>. Rol: <mark>sürdürülebilirlik ve iyileştirme</mark>. Materyal desteği (mekân, malzeme, çocuk bakımı, ulaşım), takdir ve izleme/değerlendirme: monitor → ask → revise → report back. <em>Önem:</em> etkinlikler hevesle başlayıp söner; “parents repeat what is noticed and supported.” Değerlendirme sorunu erken yakalar ve ailelere katkılarının işe yaradığını gösterir.</p>
+<p class="mini"><b>Slayt detayları:</b> Assess: <em>informal</em> (sohbet, gözlem, telefon, ev ziyareti; güven ister) + <em>formal</em> (anket, telefon görüşmesi, sistematik geri bildirim). Roller 3 gruba iletilir: katılan veliler, personel, yöneticiler. Seçim ölçütleri şeffaf olur (müsaitlik, ilgi, beceri, etkinliğin ihtiyacı); görevlendirme önerilir ve geri bildirim alınır. Eğitim katılımdan önce (oryantasyon) ve katılım sırasında (koçluk) yapılır; veli ve personel aynı atölyede çalışır. Personel–veli iletişiminin amacı/süreci/sonucu: rolleri anlaşılır kılmak → fikir alışverişi ve problem çözme → uyum ve takım çalışması. Veli emeği bedava işgücü sayılmaz; katılım için veliden para istenmez.</p>
+<div class="note">Kapanış: tek bir bileşen eksik olsa bile etkinlik çökebilir (örneğin koordinatör ya da eğitim yoksa). Bu yüzden programdaki her etkinlik yedi bileşenin hepsinden geçer.</div>`},
+{t:"cards", cards:[
+["7 ingredients sırası?","Coordinate · Assess · Specify roles · Recruit/select/assign · Train · Establish communication · Support ongoing"],
+["Kaç proje incelendi?","57 federal fonlu veli katılım projesi (Lyons, Robbins & Smith)"],
+["Koordinatörün 4 rolü?","Facilitator · Provider of information · Administrator · Trainer"],
+["Lyons: çalışmanın “en net” bulgusu?","“Effective, well-planned training lies at the heart of successful parental involvement.”"],
+["Lyons: etkili recruitment?","“Simply publicizing is not enough”; en yaygın etkili yöntem yoğun kişisel temas"],
+["Lyons: ihtiyaç göz ardı edilince?","“Parental involvement suffered”; önce bilgi toplanan yerlerde “tended to thrive”"],
+["Lyons: roller varsayılınca?","“Confusion and conflict arose”"],
+["Lyons: en başarılı bölgelerdeki ana etken?","Doğrudan sorumluluğu olan bir kişinin (koordinatör) çalışması"],
+["Coordination: rol + önem?","Sahiplenme ve tutarlılık. Sorumlu kişi yoksa mesaj tutarsızlaşır, takip yapılmaz, etkinlik söner; diğer altısının temeli"],
+["Assess: rol + önem?","Eşleştirme. İhtiyaç analizi hedefi anlamlı, kaynak analizi uygulanabilir kılar; varsayımla tasarlanan program tutmaz"],
+["Specify roles: rol + önem?","Netlik ve bağlılık. Belirsiz rol kaygılı/pasif veli, net rol kendinden emin veli yaratır"],
+["Recruit: rol + önem?","Kapsayıcılık. Recruitment is relational; hep aynı küçük grubun katılmasını önler"],
+["Train: rol + önem?","Kapasite (dual capacity). Katılım öğrenilen bir davranıştır; iyi niyet yetmez"],
+["Communication: rol + önem?","İki yönlü akış ve güven; veli↔veli ağlarını da kapsar"],
+["Support: rol + önem?","Sürdürülebilirlik. Materyal desteği + monitor→ask→revise→report back"]
+]},
+{t:"mcq", items:[
+{q:"Atölye 14:00'te yapıldı, çalışan veliler gelemedi. Hangi bileşen eksik?", o:["Train","Assess needs & resources","Specify roles","Support"], a:1, w:"İhtiyaç ve müsaitlik sorulmadı; varsayımla planlandı."},
+{q:"Veliler gezi refakatine geldi ama ne yapacaklarını bilmiyorlardı.", o:["Specify roles","Recruit","Coordination","Communication"], a:0, w:"Grup büyüklüğü, buluşma saati ve gözetim görevi önceden tanımlanmalıydı."},
+{q:"Proje güzel başladı, iki ay sonra söndü; kimse teşekkür etmedi, malzeme bitti.", o:["Support ongoing activities","Assess","Train","Recruit"], a:0, w:"Materyal desteği, takdir ve izleme yoktu."},
+{q:"Her etkinliğe yalnızca veli derneğindeki 5 anne geliyor.", o:["Recruit, select & assign","Coordination","Train","Specify"], a:0, w:"Kişisel ve çeşitli davet gerekiyor."}
+]}
+]});
+
+S.push({title:"Two-generation programs + Türkiye", min:12, star:true, blocks:[
+{t:"learn", h:"Tanım + core components", html:`
+<p><span class="k">Two-generation approach</span> (Smith, “Two Generation Programs for Families in Poverty”): <mark>hem çocuğa hem ebeveyne aynı anda ve entegre</mark> hizmet veren programlar.</p>
+<p>Mantık: çocuğun gelişimi ailenin kapasitesine bağlıdır. Ebeveyn güçlenince çocuk etkilenir, çocuğun ilerlemesi de ebeveyni motive eder (transactional).</p>
+<h2>Core components</h2>
+<ol>
+<li><span class="k">Early childhood education</span>: çocuk için kaliteli okul öncesi</li>
+<li><span class="k">Parenting education/support</span>: ebeveyn–çocuk etkileşimi, ebeveynlik becerileri</li>
+<li><span class="k">Adult self-sufficiency</span>: okuryazarlık, eğitim, meslek ve iş</li>
+<li><span class="k">Support services &amp; social capital</span>: sağlık, psikososyal destek, vaka koordinasyonu, akran ağı</li>
+</ol>
+<div class="note"><span class="k">Harvard Center, “Building Adult Capabilities”:</span> çocuk sonuçlarını iyileştirmek için yetişkinin <em>executive function ve öz-düzenlemesini</em> güçlendir, <em>stres kaynaklarını azalt</em>, <em>yanıt veren ilişkileri</em> destekle.</div>`},
+{t:"learn", h:"Başarı koşulları + zorluklar", html:`
+<ol>
+<li><mark>Entegrasyon</mark>: iki kuşağın hizmetleri ortak hedef ve içerik paylaşır, yan yana ama kopuk yürümez</li>
+<li><span class="k">Yoğunluk ve süre</span>: tek seferlik seminer değil, aylarca haftalık</li>
+<li><span class="k">Kalite ve eğitimli personel</span></li>
+<li><span class="k">Kültürel ve bağlamsal duyarlılık</span>: aile değerlerine saygı (Kağıtçıbaşı: autonomous-related), anadilde materyal</li>
+<li><span class="k">Güçlü yanlara dayalı</span>, eksiklik vurgusuz bir duruş</li>
+<li><span class="k">Recruitment &amp; retention</span>: esnek saatler, çocuk bakımı, akran desteği. <mark>Programı bırakma büyük bir sorun (Smith Ch.10)</mark></li>
+<li><span class="k">Değerlendirme</span>: iki kuşağı da ölç (pre/post, gözlem, veli görüşü)</li>
+</ol>
+<p class="mini">Smith Ch.10, tasarım ve değerlendirme zorlukları: düşük yoksa çok yüksek yoğunluk, programdan ayrılmalar, hangi sonucun ölçüleceği, ölçme araçları, kontrol grubu sorunu.</p>`},
+{t:"learn", h:"📖 Okuma: Ramey et al. Ch.7 “Two-Generation Early Intervention Programs” (Q3'ün ana kaynağı)", html:`
+<p><span class="k">Tanım ve amaç:</span> “to simultaneously help prepare parents for employment that can improve families' economic resources and to enhance the development of children through a variety of direct and indirect supports.” Hedef, yüksek riskli yoksul ortamlardaki çocukların gelişimi. Program “simultaneously” çocuk ve ebeveynin ihtiyaçlarına yanıt verir.</p>
+<p><span class="k">Tipik hizmetler:</span></p>
+<ol>
+<li>İstihdama hazırlık: yetişkin eğitimi, meslek eğitimi, iş yerleştirme.</li>
+<li>Yaşam becerileri ve ebeveynlik eğitimi.</li>
+<li>Kaliteli çocuk bakımı ve erken eğitim.</li>
+<li>Sağlık, ulaşım ve sosyal hizmetlere erişim.</li>
+</ol>
+<p><span class="k">Neden iki kuşak?</span></p>
+<ul>
+<li>Eski çocuk programları yalnızca çocuğa hizmet veriyordu; yoksulluk programları ise yalnızca ebeveyne odaklanıp etkinin “trickle-down” ile çocuğa ulaşacağını varsayıyordu.</li>
+<li>Oysa çok düşük kaynaklı ailelerde ilk 5 yılda bu kadar büyük değişimin olabileceğine dair kanıt yok.</li>
+<li>Yalnızca ebeveynin kendi ayakları üzerinde durmasına odaklanmak “is not likely to be an adequate strategy” for child development.</li>
+<li>Vaat: “both generations are expected to experience benefits that will be sustained and may even increase over time.”</li>
+</ul>
+<p><span class="k">Etkili erken müdahalenin 7 ilkesi (Ramey &amp; Ramey) = başarı koşulları:</span></p>
+<ol>
+<li><b>Timing</b>: erken başlayıp uzun süren müdahale daha çok fayda sağlar (Abecedarian, IHDP). Müdahale olmazsa 2–3 yaşta ciddi kayıp olur ve tam telafinin kanıtı yok.</li>
+<li><b>Intensity</b>: daha yoğun program daha büyük etki yaratır. <mark>IHDP'de en çok katılan üçte birlik grupta zihinsel gerilik yaklaşık 9 kat azaldı.</mark> Haftada 1 ev ziyareti yetmedi; 3 ziyarette fayda görüldü (Powell &amp; Grantham-McGregor).</li>
+<li><b>Direct provision</b>: çocuğa doğrudan sunulan öğrenme deneyimi, aracılı olandan çok daha etkili. Project CARE'de sadece ev ziyareti işe yaramadı; tam gün merkez + ev ziyareti işe yaradı.</li>
+<li><b>Breadth</b>: doğrudan ve dolaylı yolları birleştiren programlar en büyük etkiyi yaratır. Bazen önce yiyecek, konut ve gelir gibi temel ihtiyaçlar karşılanmalıdır.</li>
+<li><b>Individual differences</b>: herkese aynı paket olmaz. “A single set of parenting education classes is unlikely to be adequate.”</li>
+<li><b>Environmental maintenance</b>: destek sürmezse kazanım söner; ilkokula geçişte de destek gerekir.</li>
+<li><b>Cultural appropriateness</b>: kültürel inanç ve pratiklerin üzerine kurulmalı; toplulukla ve katılımcılarla birlikte tasarlanmalı; stereotipten kaçınılmalı. Örnek: Avance eski katılımcıları istihdam ediyor.</li>
+</ol>
+<p><span class="k">Kaynaklar 3 hedefe yönelir:</span> aile birimi (gelir, konut, sağlık, ulaşım) · yetişkin (eğitim, iş, ebeveynlik) · çocuk (eğitim, bakım, sosyal-duygusal destek). Süreç: bireysel ihtiyaç analizi → vaka yönetimi → izleme ve uyarlama → yeniden değerlendirme.</p>
+<p><span class="k">6 gelişimsel “priming” mekanizması</span> (hem çocuk hem yetişkin için):</p>
+<ol>
+<li>Keşfetme fırsatı.</li>
+<li>Yeni becerilerde mentorluk.</li>
+<li>Gelişimsel başarıları kutlamak.</li>
+<li>Yeni becerileri tekrar etmek.</li>
+<li>Uygunsuz ceza ve alaydan kaçınmak.</li>
+<li>Dil desteği.</li>
+</ol>`},
+{t:"learn", h:"📖 Okuma: Powell Ch.10 (zorluklar) + Reynolds + Guralnick + eleştiri", html:`
+<p><span class="k">Powell, “Challenges in the Design and Evaluation of Parent–Child Intervention Programs”:</span> “top-down, professionally driven”, herkese aynı programı uygulayan modelden uzaklaşma. 3 zorluk:</p>
+<ol>
+<li><b>Matching programs and parents</b>: velinin ihtiyaç algısıyla uyum (goodness of fit). Ulaşılması zor aileler: düşük gelirli ve sık taşınan aileler programı bırakıyor.</li>
+<li><b>Realigning parent–professional relations</b>: “yüksek riskli” aileleri hedeflemekle eksiklik vurgusu yapmamak arasında temel bir uyumsuzluk var. Güçlendirme önemli, ama bazı gruplar (örneğin genç anneler) net yönlendirme istiyor.</li>
+<li><b>Social context of parenthood</b>: dış stres azalınca ebeveyn yetkinliği artar. Ama çocuk kaybolmamalı: Child and Family Resource Program'da ev ziyaretleri aileye odaklanınca “family circumstances but not child functioning were improved.” Zorluk: “to balance the needs of child, parent, and family.”</li>
+</ol>
+<p><span class="k">Reynolds (1998), uzun vadeli etkinliğin 8 ilkesi:</span></p>
+<ol>
+<li>En yüksek riskli aileleri hedefle.</li>
+<li>Erken başla, 2–3. sınıfa kadar sürdür.</li>
+<li>Kapsamlı hizmet sun (sağlık, sosyal hizmet, veli programı, müfredat).</li>
+<li><mark>Aktif ve çok yönlü veli katılımı, “the cornerstone”.</mark></li>
+<li>Çocuk merkezli, yapılandırılmış müfredat.</li>
+<li>Küçük sınıflar (1:8 veya daha düşük).</li>
+<li>Personel gelişimi.</li>
+<li>Değerlendirme (bütçenin en az %3'ü).</li>
+</ol>
+<p><span class="k">Chicago Child-Parent Centers:</span></p>
+<ul>
+<li>Veliler haftada en az yarım gün merkezde bulunmak zorunda; veli odası var; kayıtta ev ziyareti yapılıyor.</li>
+<li>6 yıl katılanlar 8. sınıfta okumada 1 sınıf düzeyi önde (7.7'ye karşı 6.7).</li>
+<li>Sınıf tekrarı: 6 yıl katılanlarda %11, 4 yıl katılanlarda %23.</li>
+<li>Uzun vadeli etkinin iki yolu: (1) okula hazırlık, (2) veli katılımı. Katılan ebeveynler “are more likely to continue to provide the nurturance necessary to maintain gains.”</li>
+</ul>
+<p><span class="k">Guralnick, developmental systems model:</span> erken müdahalenin en kritik özelliği, müdahalenin “center on families”. Gelişimi yönlendiren 3 aile etkileşim örüntüsü:</p>
+<ol>
+<li>Ebeveyn-çocuk etkileşiminin kalitesi.</li>
+<li>Ailenin düzenlediği deneyimler (materyal, bakım, rutin).</li>
+<li>Sağlık ve güvenlik.</li>
+</ol>
+<p>Ailedeki stresörler: ebeveynin ruh sağlığı (özellikle annede depresyon), maddi kaynak, sosyal destek, çocuğun özellikleri. “It is the cumulative impact that matters.” 10 ilkenden biri: “True partnerships with families cannot occur without sensitivity to cultural differences.”</p>
+<p><span class="k">Eleştirel kaynaklar (dengeli cevap için):</span></p>
+<ul>
+<li><b>Clarke-Stewart</b>, parent education'ın 5 varsayımını sorguluyor. Leler'in incelemesinde 30 çalışmanın 19'u olumlu etki buldu, 11'i fark bulamadı, hiçbiri olumsuz değil. Ancak etkiler orta düzeyde ve çoğu zaman kalıcı değil. Ebeveynin karar sürecine katıldığı programlar en umut verici.</li>
+<li><b>Laosa</b>: eksiklik ve “cultural deprivation” paradigması orta sınıf yanlılığı taşıyor; gruplar “optimal development”ı farklı tanımlıyor.</li>
+<li><b>Grotberg</b>: Head Start'ta katılım zorunlu ama velilerin en fazla üçte biri katılıyor; veliler bazen “mere recipients of information.”</li>
+</ul>
+<p><span class="k">NYT, Paul Tough (2016), “To Help Kids Thrive, Coach Their Parents”:</span></p>
+<ul>
+<li><mark>Jamaika çalışması</mark>: haftada 1 saatlik ev ziyaretiyle ebeveynler çocukla oynamaya teşvik edildi. Fark beslenme desteğinden değil oyundan geldi: daha iyi zekâ puanı ve öz-kontrol; yetişkinlikte yıllık kazanç <b>%25 daha fazla</b>.</li>
+<li>Dozier: koruyucu ailelere sadece 10 ev ziyaretiyle “serve and return” koçluğu verildi; çocuklarda daha güvenli bağlanma ve daha sağlıklı stres hormonu örüntüsü görüldü.</li>
+<li>“One of the most powerful levers for change is not the children themselves, but the adults who surround them.”</li>
+</ul>`},
+{t:"learn", h:"Türkiye: sorunlar ve kanıt", html:`
+<p><span class="k">Seçebileceğin sorunlar:</span> düşük okul öncesi okullaşma (özellikle 3–4 yaş) · çocuk yoksulluğu ve bölgesel eşitsizlik · mülteci/göçmen aileler (dil, travma, erişim) · annelerin düşük eğitimi ve kadınların düşük işgücüne katılımı · ekonomik baskı ve zaman kıtlığı · technoference · babaların bakıma düşük katılımı.</p>
+<p><span class="k">Bağlam rakamı (TEEP 2009 makalesi):</span> Türkiye'de okul öncesi okullaşma <b>%24</b> (MEB 2007); dünya ortalaması %40, yüksek gelirli ülkelerde %90'a kadar.</p>
+<p><span class="k">TEEP, Turkish Early Enrichment Project (Kağıtçıbaşı, Sunar &amp; Bekman, 2001)</span></p>
+<ul>
+<li>İstanbul'un düşük gelirli mahalleleri; başlangıçta 255 çocuk. Annelerin ortalama eğitimi 5.36 yıl.</li>
+<li>Desen: 3 bakım ortamı (eğitici kreş / bakım odaklı kreş / ev) × anne eğitimi (var / yok).</li>
+<li><mark>Mother Training iki bileşenli</mark>: (1) <b>Cognitive Program</b>: Türkçe HIPPY; anne çocukla günde 15–20 dk çalışıyor. (2) <b>Mother Enrichment Program</b>: iki haftada bir rehberli grup tartışması (sağlık, beslenme, disiplin, iletişim; annenin yetkinliği ve eşiyle iletişimi).</li>
+<li>Program, mahalleden yetişmiş yardımcı annelerle (paraprofesyonel) yürütüldü.</li>
+</ul>
+<p><span class="k">Program sonunda:</span> zekâ puanı anne eğitimi alan grupta 92.08, almayan grupta 85.25. Çocuklar daha az saldırgan ve daha olumlu benlik algılı. Anneler: fiziksel ceza %17.6'ya karşı %36.8; çocuğa hikâye okuma ya da anlatma %87.7'ye karşı %62.6.</p>
+<p><span class="k">7 yıl sonra:</span></p>
+<ul>
+<li><mark>Hâlâ okulda olanlar: anne eğitimi alan grupta %86, almayanlarda %67.</mark> Anne eğitimi, başlangıç zekâsından ve bakım ortamından bağımsız olarak okul başarısını yordadı. Yazarlara göre “probably the most important finding”.</li>
+<li>Türkçe, matematik ve genel not ortalaması daha yüksek.</li>
+<li>Babalar daha az dövüyor; kadının statüsü yükseldi.</li>
+<li>Polisle sorun yaşayan 8 çocuğun <b>hepsi</b> anne eğitimi almayan gruptan.</li>
+</ul>
+<p><span class="k">22 yıl sonra (Kağıtçıbaşı et al., 2009; 131 kişi):</span></p>
+<ul>
+<li>Herhangi bir zenginleştirme alanlarda üniversiteye gidiş <b>%44.1, almayanlarda %26.6</b>.</li>
+<li>Mesleki statü daha yüksek; çalışmaya daha geç başlamışlar (daha uzun okumuşlar); kentsel yaşama daha iyi entegre olmuşlar (bilgisayar sahipliği %44.1'e karşı %24.2).</li>
+<li>Bilişsel düzeyi düşük başlayan çocuklar en çok yararlanan grup.</li>
+<li>“The only non-U.S. example to date.”</li>
+<li>Maliyet-fayda oranı: anne-çocuk eğitiminde 5.91–8.14 : 1, kurum temelli eğitimde 4.35–6.31 : 1 (Kaytaz 2005). Ev temelli program daha ucuz.</li>
+</ul>
+<p><span class="k">Neden başarılı oldu?</span> (1) Sadece ev ziyareti değildi; grup tartışmaları vardı ve kadın grupları kültürel olarak uygun. (2) Eğitim hedefini aile desteğiyle birleştirdi. Yoshikawa'nın (1994) 22 programlık incelemesi: “those which combine early childhood education with family support are the most effective in the long run.” (3) Uygulama kalitesi yüksekti: sürekli eğitim, düşük devamsızlık, anneler programın hedeflerini paylaşıyordu.</p>
+<p><span class="k">TEEP'in temel bileşenleri (Kağıtçıbaşı):</span> whole child approach · contextual approach · multiple targets and goals · <mark>empowerment</mark> · sharing goals with mothers · optimal timing · cost-effectiveness.</p>
+<p><span class="k">AÇEV, Anne-Çocuk Eğitim Programı (MOCEP / AÇEP)</span>: TEEP'e dayanıyor. Milli Eğitim Bakanlığı ile 60 ilde uygulandı, yaklaşık 60.000 kişiye ulaştı; süre 1 yıla indirildi. Toplum merkezlerinde, ev ziyaretsiz grup formatında yürütülüyor, bu da maliyeti düşürüp etkiyi artırdı. Katılımı sürdürmek için sertifika ve mezuniyet töreni yapılıyor; eşlerinin katılmasına izin veren babalara teşekkür ediliyor.</p>
+<p class="mini">“The parent-focused approach reaches the child through the context… changes not only the child but the proximal environment.” · “Just 'more day care' without proper attention to the quality of care is not a solution.”</p>
+<p><span class="k">Ersoy Erdemir</span>: Suriyeli mülteci ve yerel çocuklar için <mark>anneler aracılığıyla ev temelli erken eğitim</mark>; bağlama duyarlı müdahale; çocukta, ebeveynlikte ve çocuk kavramında karşılıklı (transactional) değişim. <em>Bu hocanın kendi çalışması, mutlaka an!</em></p>
+<p><span class="k">Reynolds, Chicago Child-Parent Centers</span>: veli katılımı uzun vadeli etkilerin bir kısmını açıklıyor.</p>`},
+{t:"cards", cards:[
+["Two-generation tanımı?","Çocuğa ve ebeveyne aynı anda, entegre hizmet veren programlar"],
+["2-gen 4 core component?","ECE (çocuk) · Parenting education · Adult self-sufficiency (eğitim/iş) · Support services & social capital"],
+["Harvard Center theory of change?","Yetişkin kapasitesini güçlendir (executive function, öz-düzenleme) + stresi azalt + yanıt veren ilişkileri destekle → çocuk sonuçları"],
+["TEEP'in bileşenleri?","Bilişsel çocuk programı (HIPPY) + Mother Enrichment Program"],
+["TEEP 7 yıl sonra: okulda kalma?","Anne eğitimi alan grupta %86, almayanda %67; anne eğitimi, zekâ ve bakım ortamından bağımsız olarak okul başarısını yordadı"],
+["TEEP 22 yıl sonra?","Üniversiteye gidiş %44.1'e karşı %26.6; daha yüksek mesleki statü, kentsel yaşama entegrasyon; düşük başlayanlar en çok yararlandı; ABD dışındaki tek uzun vadeli örnek"],
+["TEEP neden başarılı (3 neden)?","Grup tartışmaları (sadece ev ziyareti değil) · eğitim ve aile desteğinin birleşmesi · yüksek uygulama kalitesi ve ortak hedefler"],
+["Yoshikawa (1994)?","22 programın incelemesi: erken eğitimi aile desteğiyle birleştirenler uzun vadede en etkili"],
+["Ramey & Ramey'in 7 ilkesi?","Timing · Intensity · Direct provision · Breadth · Individual differences · Environmental maintenance · Cultural appropriateness"],
+["Powell'ın 3 zorluğu?","Program ile veliyi eşleştirmek · veli-profesyonel ilişkisini yeniden kurmak · ebeveynliğin sosyal bağlamı (çocuk, ebeveyn ve aile ihtiyaçlarını dengelemek)"],
+["Reynolds: parent involvement?","“The cornerstone”; CPC'de 6 yıl katılanlarda sınıf tekrarı %11, 4 yıl katılanlarda %23"],
+["Kağıtçıbaşı: yoksulluk ile çocuk arasında?","Aracı aile değişkenleri (stres vb.); yoksulluk giderilemese de ebeveyne destekle azaltılabilir"],
+["Türkiye okul öncesi okullaşma (TEEP 2009)?","%24 (MEB 2007); dünya ortalaması %40"],
+["Jamaika ev ziyareti (NYT, Tough)?","Ebeveyni oyuna teşvik etmek: yetişkinlikte %25 daha fazla kazanç, daha iyi zekâ puanı ve öz-kontrol"],
+["Erdemir'in çalışması?","Suriyeli mülteci ve yerel çocuklar için anneler aracılığıyla ev temelli erken eğitim; karşılıklı (transactional) değişim"],
+["2-gen başarısının 3 kritik koşulu?","Entegrasyon · yoğunluk/süre · retention (+ kültürel duyarlılık, değerlendirme)"]
+]}
+]});
+
+S.push({title:"Evidence bankası (okumalardan doğrulanmış)", min:10, star:true, blocks:[
+{t:"learn", h:"Her soru için hazır kanıt seti", html:`
+<p>Kural: <span class="k">yazar + yıl + bulgu</span>. Rakamı yalnızca buradan biliyorsan yaz. Hepsi okuma paketinden doğrulandı.</p>
+<h2>Q1 · Neden FE / engeller / uygulamalar</h2>
+<ul>
+<li><b>Bronfenbrenner (1974)</b>, Coletta'da alıntılanıyor: “Without such family involvement, any effects of intervention… are likely to be ephemeral.”</li>
+<li><b>Head Start araştırması (MIDCO, 1972)</b>: “the amount of parent involvement was apparently far more important than the model.” Head Start kazanımları, ebeveyn okul katılımını bırakınca kayboldu.</li>
+<li><b>Coleman Report (1966)</b>: okul başarısında ana faktör ev ortamı. <b>Gordon (1968)</b>'un 5 varsayımı.</li>
+<li><b>AÇEV</b>: okul başarısının en iyi yordayıcısı gelir değil, ev öğrenme ortamı ve katılım. <b>Henderson &amp; Mapp (2002)</b>: katılım lisede bile başarıyı yordar.</li>
+<li><b>68 Ideas</b>: katılmamanın 4 nedeni (zaman yok, ne yapacağını bilmiyor, önemini bilmiyor, dil); “one-third rule”.</li>
+<li><b>Coletta Ch.2</b>: Maslow (veliyi 4. basamakta yargılıyoruz); “Educators draw to themselves that which they believe will occur.”</li>
+<li><b>Lyons Ch.5</b>, evde öğretimin engelleri: “öğretmek okulun işi” tutumu, dil, yanlış öğretme korkusu.</li>
+<li><b>Downer et al. (2008)</b>: 27 çalışmanın 25'inde baba katılımı ile sosyal-duygusal beceri pozitif ilişkili. <b>Linking Fathers</b>: babaların en büyük engeli zaman (%84).</li>
+</ul>
+<h2>Q2 · 7 vital ingredients</h2>
+<ul>
+<li><b>Lyons, Robbins &amp; Smith, Study of Parental Involvement</b>; slayta göre 57 proje. Her bileşen için “our study found…” cümleleri var: koordinatör, en başarılı bölgelerdeki ana etken; ihtiyaç göz ardı edilince “suffered”; roller varsayılınca “confusion and conflict”; “simply publicizing is not enough”; eğitim “the study's most clear-cut finding”; “the more frequent the feedback… the better”.</li>
+<li>Advisory gruplarında “intensive training” başarılıyı başarısızdan ayıran özellik.</li>
+</ul>
+<h2>Q3 · Two-generation ve Türkiye</h2>
+<ul>
+<li><b>TEEP (Kağıtçıbaşı, Sunar &amp; Bekman, 2001)</b>: 7 yıl sonra okulda kalma %86'ya karşı %67; anne eğitimi zekâdan bağımsız olarak okul başarısını yordadı. <b>22 yıl sonra (2009)</b>: üniversiteye gidiş %44.1'e karşı %26.6; yüksek mesleki statü.</li>
+<li><b>Yoshikawa (1994)</b>: erken eğitim + aile desteği uzun vadede en etkili.</li>
+<li><b>MOCEP/AÇEV</b>: 60 il, yaklaşık 60.000 kişi; maliyet-fayda 5.91–8.14 : 1.</li>
+<li>Türkiye'de okul öncesi okullaşma %24 (MEB 2007).</li>
+<li><b>Ramey et al.</b>: IHDP'de en çok katılanlarda zihinsel gerilik yaklaşık 9 kat azaldı; sadece ev ziyareti yetmiyor (Project CARE).</li>
+<li><b>Sameroff</b>: risk faktörü olmayan çocuklar 8–9 riskli olanlardan zekâ testinde 30 puandan fazla yüksek. <b>McLoyd</b>: yoksulluk stres yoluyla ebeveynliği bozuyor.</li>
+<li><b>Reynolds, Chicago CPC</b>: veli katılımı “cornerstone”; sınıf tekrarı %11'e karşı %23.</li>
+<li><b>Jamaika (NYT, Tough)</b>: yetişkinlikte %25 daha fazla kazanç.</li>
+</ul>
+<h2>Parenting / Bowen</h2>
+<ul>
+<li><b>Dornbusch (1987, yaklaşık 8.000 öğrenci)</b>, <b>Lamborn (1991)</b>, <b>Steinberg (1989)</b> (authoritative başarıyı kolaylaştırıyor), <b>Aunola &amp; Nurmi (2004)</b>, <b>Bronstein (2005)</b>.</li>
+<li><b>Skowron (2005)</b>: annede differentiation yüksekse çocuğun puanları yüksek, saldırganlığı düşük.</li>
+<li><b>Kağıtçıbaşı (1970)</b>: kontrol ve sevgi bağımsız boyutlar.</li>
+<li><b>Hortaçsu (1995)</b>: Türkiye'de annenin eğitimi çocuğun başarısıyla ilişkili.</li>
+</ul>
+<p class="mini">Slaytta geçip pakette olmayanlar (rakam vermeden anabilirsin): Pinquart meta-analizleri, Zhao (2022), Rohrer (2015), NAEYC, Head Start PFCE, Mapp &amp; Bergman. Okuma listesinde olup pakette bulunmayanlar: Harvard FRP, Stelmack, Bierman &amp; Sheridan, Getting Ready, Erdemir'in makaleleri. Bunları yalnızca genel hatlarıyla an.</p>`},
+{t:"cards", cards:[
+["Bronfenbrenner (1974) alıntısı?","“The family is the most effective and economical system for fostering and sustaining the development of the child… Without family involvement, effects are likely to be ephemeral.”"],
+["Head Start / MIDCO (1972)?","Katılımın miktarı modelden çok daha önemli; kazanımlar ebeveyn katılımı bitince kayboldu"],
+["Gordon'un 5 varsayımı (özet)?","Tutumlar evde öğrenilir · ebeveyn özsaygısı çocuğu etkiler · ev ve okul paylaşınca en iyi öğrenme · ebeveyn öğretince özsaygısı artar · katılan ebeveyn desteklemeye devam eder"],
+["Coletta'nın 5 faydası?","Başarı ve motivasyonda artış ve kalıcılık · daha iyi benlik algısı · ev ve okula ek destek · kamuoyunun anlaması · ebeveynin kişisel gelişimi"],
+["AÇEV: başarının en iyi yordayıcısı?","Gelir ya da sınıf değil; evde öğrenmeyi destekleyen ortam ve eğitime katılım"],
+["68 Ideas: katılmamanın 4 nedeni?","Zaman yok · ne yapacağını bilmiyor · önemini bilmiyor · dili konuşmuyor"],
+["Downer et al. (2008)?","Sosyal-duygusal sonuçlara bakan 27 çalışmanın 25'inde (%93) baba katılımı pozitif; annenin katkısının ötesinde ek varyans açıklıyor"],
+["Sameroff, risk faktörleri?","Risksiz çocuklar, 8–9 riskli olanlardan zekâ testinde 30+ puan yüksek; riskin sayısı türünden önemli"],
+["Steinberg (1989)?","Authoritativeness başarıyı kolaylaştırıyor; 3 bileşeni: warmth, behavioral supervision, psychological autonomy granting"],
+["Skowron (2005)?","Annede differentiation of self yüksekse çocuğun sözel ve matematik puanları yüksek, saldırganlığı düşük"],
+["Clarke-Stewart / Leler?","30 parent education çalışmasının 19'u olumlu etki buldu, 11'i fark bulamadı, hiçbiri olumsuz değil; etkiler orta düzeyde ve kalıcılığı belirsiz"]
+]}
+]});
+
+const Q1MODEL = `
+<p><b>Why.</b> Families are children's first and most important teachers. As Coletta (Ch.1) argues, "no influence upon the child's early years is as powerful as that of the home"; the Coleman Report (1966) identified home background as the chief factor in school success. Ecologically (Bronfenbrenner), the child lives in two microsystems, home and preschool, and the <b>mesosystem</b> between them shapes development (AÇEV), so engagement builds continuity. Coletta's strongest argument concerns <b>sustaining gains</b>: Head Start gains "were lost when parents terminated their school involvement", and Bronfenbrenner (1974) concluded that "without family involvement, any effects of intervention are likely to be ephemeral." The Head Start (MIDCO, 1972) survey found that "the amount of parent involvement was far more important than the model." Following Gordon's (1968) assumptions, children learn best when home and school share the educational experience, and parents' self-esteem rises when they can teach their own children. AÇEV adds that the best predictor of school success is not income but a learning-supportive home environment. Coletta lists five benefits: higher and sustained achievement and motivation, better self-concepts, support for school and home, public understanding, and parents' personal growth. Teachers benefit too: they know children better and share responsibility.</p>
+<p><b>Barriers.</b> Parents say they do not take part because they have no time, do not know what to do, do not know it is important, or do not speak the language (68 Ideas). Lyons et al. note that relations are hardest across economic and cultural differences: parents are reluctant to approach a big institution, and staff may see them as "uninterested or even hostile." Coletta warns that teachers judge parents at Maslow's esteem level without considering unmet physical, safety and belonging needs, and that "educators draw to themselves that which they believe will occur." For home teaching specifically, parents may believe teaching is the school's job or fear teaching wrongly (Lyons, Ch.5). Fathers face time conflicts and mother- and female-staff "gateways" (Linking Fathers), even though father involvement predicts children's socio-emotional skills (Downer et al., 2008: 25 of 27 studies).</p>
+<p><b>Practices ("I would… because…").</b> (1) Build a <b>parent profile</b> (work hours, languages) and a short survey, because "a fixed monthly meeting is not satisfactory" when parents work shifts (Coletta, Ch.4), and programs ignoring needs "suffered" (Lyons). (2) Invite <b>personally</b>, through phone calls, children's invitations and fathers by name, because "simply publicizing is not enough." (3) Begin with <b>school support</b> (a family breakfast; Food, Families, Fun), since it is "a parent's first step toward other forms of involvement." (4) Run <b>home-based instruction</b>: Make-It-Take-It workshops and weekly idea cards that are playful, built on routines and focused on the child's learning, because children whose parents help at home learn more and attend better (Lyons, Ch.5), and this equalizes home environments. (5) Keep <b>two-way communication</b> through a communication notebook and positive phone calls ("one-way isn't communication"). (6) Remove barriers: offer the same session in the evening, childcare, an interpreter. (7) Use <b>active listening and I-messages</b> and act as a helper, an "authority, not authoritarian" who supports rather than supplants parents (Coletta, Ch.2).</p>
+<p><b>Conclusion.</b> Family engagement is a total staff effort and a reciprocal partnership; its success depends on what the school changes, not on blaming families.</p>`;
+
+const Q2MODEL = `
+<p><b>Intro.</b> Lyons, Robbins & Smith derived the seven vital ingredients from their Study of Parental Involvement; successful districts all followed the same steps. They are "critical to recipes for success" and "important no matter what activity is being developed," so they form the implementation framework for every form of involvement. The first three are the planning stage.</p>
+<p><b>1 Coordination.</b> Role: ownership. The coordinator acts as facilitator, provider of information, administrator and trainer. Importance: in the districts where involvement was "most widespread and successful, a major contributing factor was an individual who had direct responsibility"; the coordinator ensures all the other ingredients are met. Without one, follow-up fails.</p>
+<p><b>2 Assessing needs & resources.</b> Role: matching what is needed with what is available, formally and informally, for both parents and staff. Importance: where needs were ignored "parental involvement suffered"; where information was gathered first it "tended to thrive." Needs assessment ensures the activity "serves a real purpose," resource assessment ensures enough people. It means planning with families, not for them.</p>
+<p><b>3 Specifying & communicating roles.</b> Role: turning intentions into concrete, agreed tasks communicated to parents, staff and administrators. Importance: where roles were assumed, "confusion and conflict arose"; "people are more willing to volunteer if they know exactly what they are getting into." Written roles reduce tension between administrators and parents.</p>
+<p><b>4 Recruiting, selecting & assigning.</b> Role: inviting and matching parents to tasks (the coordinator as "matchmaker"). Importance: "simply publicizing opportunities is not enough"; the most effective method is "extensive personal contact." This broadens participation beyond the same few parents, prevents burnout and reaches fathers and working parents.</p>
+<p><b>5 Training parents & staff.</b> Role: capacity building, preservice and inservice, for both groups. Importance: "one of the study's most clear-cut findings was that effective, well-planned training lies at the heart of successful parental involvement." It gives parents confidence, prevents teachers doubting aides, and eases staff worries that working with parents is too time-consuming. Intensive training separated successful from unsuccessful advisory groups.</p>
+<p><b>6 Communication channels.</b> Role: school↔parents, staff↔parents and parent↔parent flow. Importance: builds rapport and trust; parent exchanges are "an important source for cross-fertilization of ideas"; when parents see their contributions are appreciated "they are more likely to continue."</p>
+<p><b>7 Supporting ongoing activities.</b> Role: material support (childcare, transport, parent room, recognition) plus monitoring and evaluation. Importance: removes practical barriers, signals that parents' work "is considered important," and "the more frequent the feedback from monitoring the better; potential problems are not allowed to take root."</p>
+<p><b>Conclusion.</b> The ingredients work as a chain: without coordination nobody ensures the rest, and without support even a well-planned activity fades. Every activity I design passes through all seven.</p>`;
+
+const Q3MODEL = `
+<p><b>Problem.</b> In Türkiye, preschool enrollment has been low (24% in 2007, compared with a world average of 40%), and children of low-income, low-education mothers, including refugee families, start school less prepared. Kağıtçıbaşı notes that low-SES Turkish mothers often do not help because they believe they "don't know enough." Risk accumulates: Sameroff found that children with no risk factors scored over 30 IQ points higher than those with 8–9. Poverty harms children through mediating family factors such as parental stress (McLoyd), and "even if poverty cannot be arrested, the mediating family problems can be reduced by intervention programs providing support to parents" (Kağıtçıbaşı).</p>
+<p><b>Approach.</b> A two-generation program aims "to simultaneously help prepare parents for employment … and to enhance the development of children through direct and indirect supports" (Ramey et al.). Parent-only programs assume a "trickle-down" effect that has little evidence, and child-only programs fade without family support.</p>
+<p><b>Program "Growing Together".</b> Low-income neighborhoods; mothers and fathers of 4–5-year-olds; 2 years. <i>Aims:</i> children: school readiness (language, early literacy and numeracy, self-regulation). Parents: responsive, authoritative parenting; confidence as first teachers; literacy and employability; empowerment. Staff: culturally sensitive practice.</p>
+<p><i>Core components.</i> (1) Direct ECE for the child in a quality educational preschool, since direct provision beats intermediary means and custodial care is not enough. (2) A TEEP-style cognitive home program (15–20 minutes a day with worksheets and storybooks). (3) Biweekly mother (and father) enrichment groups on development, discipline, communication and health. Groups, not only home visits, because women's groups are culturally appropriate and change attitudes. (4) Adult self-sufficiency: literacy and vocational courses. (5) Family support: health and social referrals, case management, peer networks. It is implemented through the 7 vital ingredients, with local paraprofessional "mother aides," personal recruitment, childcare and transport, and certificates and graduation ceremonies.</p>
+<p><b>Conditions for success</b> (Ramey & Ramey's principles): early <b>timing</b>; <b>intensity</b> (in IHDP the highest-participation group gained most; a single set of classes is not enough); <b>breadth</b>; <b>individualization</b>; <b>environmental maintenance</b> into primary school; <b>cultural appropriateness</b>, co-designed with the community. Powell's challenges also apply: match program and parents, avoid a deficit stance, and balance child and parent needs so the child does not get lost.</p>
+<p><b>Evidence.</b> TEEP (Kağıtçıbaşı, Sunar & Bekman, 2001): seven years later, 86% of children of trained mothers were still in school compared with 67%; mother training predicted school attainment independently of IQ; mothers used less physical punishment and gained status. Twenty-two years later (2009): 44.1% versus 26.6% college attendance and higher occupational status. MOCEP (AÇEV) scaled it to 60 provinces with a cost-benefit ratio of up to 8:1. Yoshikawa (1994): programs combining ECE with family support are the most effective in the long run.</p>
+<p><b>Conclusion.</b> Changing the child's proximal environment through the parent, together with direct child services, produces sustained gains for both generations.</p>`;
+
+S.push({title:"Prova 1: “Öğretmensin, FE lazım”", min:15, star:true, blocks:[
+{t:"write", id:"q1", prompt:"You are a preschool teacher. Why is family engagement needed? What barriers might you face and how would you overcome them? Give concrete practices.", tip:"6–8 dakika. Tam cümle şart değil; madde madde iskelet yeter. Sonra model cevabı aç ve kendini puanla.", model:Q1MODEL, check:[
+"Why: evin gücü / ilk öğretmen (Coletta Ch.1, Coleman)","Bronfenbrenner: mesosystem ve süreklilik","Kazanımların kalıcılığı: Head Start + Bronfenbrenner 1974 “ephemeral”","Gordon'un varsayımları ya da Coletta'nın 5 faydası","Engeller: 68 Ideas'taki 4 neden, Lyons Ch.1, Coletta'nın Maslow uyarısı","Ebeveyn eksikliği değil, okul pratiği vurgusu","En az 5 somut uygulama, her biri “because” + kaynakla","School support ile başlamak ve home-based instruction (hoca notları)","Babalar / kapsayıcılık","Kapanış: total staff effort ve partnership"]}
+]});
+
+S.push({title:"Prova 2: 7 Vital Ingredients", min:12, star:true, blocks:[
+{t:"write", id:"q2", prompt:"As a family engagement specialist, explain the role and importance of each of the 7 vital ingredients. (Do not just describe them.)", tip:"Önce 7'sini sırayla yaz, sonra her birinin yanına “rol: … / önem: … + çalışma bulgusu” ekle. 6–8 dakika.", model:Q2MODEL, check:[
+"Giriş: Lyons, Robbins & Smith, Study of Parental Involvement; ilk 3'ü planlama aşaması","7'si doğru sırada","Coordination: 4 rol + “most widespread and successful” bulgusu","Assess: “suffered / thrived” + anlamlı ve uygulanabilir","Roles: “confusion and conflict” + gönüllü ne yapacağını bilmeli","Recruit: “publicizing is not enough”, kişisel temas","Train: “most clear-cut finding”, veli + personel","Communication: 3 kanal + cross-fertilization","Support: materyal desteği + izleme (“the more frequent the feedback…”)","Tanım yerine rol ve önem kalıbı kullanıldı"]}
+]});
+
+S.push({title:"Prova 3: Türkiye + two-generation", min:15, star:true, blocks:[
+{t:"write", id:"q3", prompt:"Think about the situation in Türkiye. Choose one problem and design a program based on the two-generation approach: aims, core components, and what is needed for success.", tip:"Sorun (rakam + Kağıtçıbaşı) → neden 2-gen (Ramey) → program ve aims → core components → başarı koşulları (Ramey'in 7 ilkesi, Powell) → TEEP kanıtı. 8 dakika.", model:Q3MODEL, check:[
+"Somut bir Türkiye sorunu + rakam (%24 okullaşma) ya da Kağıtçıbaşı'nın gözlemi","Gerekçe: Sameroff riskleri / McLoyd / Kağıtçıbaşı'nın aracı değişkenleri","2-gen tanımı (Ramey): aynı anda, doğrudan ve dolaylı","Çocuk, ebeveyn ve personel için ayrı aims","Core components: doğrudan ECE + ev programı + anne/baba grupları + yetişkin eğitimi + destek hizmetleri","7 ingredients ile uygulama","Başarı koşulları: Ramey'in ilkeleri (timing, intensity, breadth, culture…)","Powell'ın zorlukları ya da çocuğun kaybolmaması","TEEP %86'ya karşı %67 + 22 yıllık sonuç + MOCEP","Yoshikawa: erken eğitim + aile desteği"]}
+]});
+
+S.push({title:"Yedek provalar (vaktin varsa)", min:12, star:false, blocks:[
+{t:"write", id:"q4", prompt:"Explain Family Systems Theory (Bowen) and how a preschool teacher can use it in family engagement.", tip:"Varsayımlar (interdependence, subsystems, boundaries, homeostasis, circular causality) → Bowen 8 → okul öncesine 4–5 uygulama → uyarı.", model:`<p>FST sees the family as an interactive system of interdependent members (the mobile analogy). It includes subsystems, boundaries (rigid vs diffuse), rules and roles, homeostasis, feedback and <b>circular causality</b>. Bowen: families develop patterns to manage anxiety; the goal is to raise <b>differentiation</b>. The 8 concepts: differentiation, triangles, nuclear family emotional process, family projection, multigenerational transmission, sibling position (Rohrer et al., 2015 caveat), emotional cutoff, societal emotional process. Dyads: pursuer–distancer, over/underfunctioning.</p><p><b>ECE use:</b> look at patterns, not "problem children" (a new sibling leads to night waking, so keep one-to-one rituals); interrupt circular loops together with parents; avoid triangles and keep the child out of adult conflict (Zhao et al., 2022, co-parenting); the teacher's own differentiation (calm, active listening); patience with homeostasis; support family stress (societal process/exosystem); warm invitations for parents with negative school histories. <b>Caveat:</b> interpretive, not diagnostic. The question shifts from "what is wrong with this family?" to "what interactions are shaping this?"</p>`, check:["FST varsayımları (en az 4)","Circular causality + dyad örneği","Bowen 8 kavram","En az 4 okul öncesi uygulaması","Teşhis değil uyarısı"]},
+{t:"write", id:"q5", prompt:"Discuss parenting styles and their implications for family engagement.", tip:"2 boyut → 4 stil + örnek → behavioral vs psychological control → kanıt → FE'ye çıkarımlar → kültür uyarısı.", model:`<p>Baumrind, Maccoby & Martin: warmth × demandingness gives authoritative, authoritarian, permissive and uninvolved styles (playground example). Behavioral control (limits, reasoning) is beneficial; psychological control (guilt, love withdrawal, shame) is a risk. Evidence: Dornbusch (1987) grades; Slicker (1998) adjustment; Aunola & Nurmi (2004) psychological control and math; Bronstein (2005) autonomy support; Pinquart (2016/2017) small, consistent effects; Pinquart & Kauser (2018) more cultural similarity than difference; Brown & Iyengar: Lamborn (1991) and Steinberg (1989) show that authoritativeness facilitates success; Skowron (2005) links mothers' Bowenian differentiation to children's achievement. FE implications: parent education on warmth, structure and autonomy; teacher modeling; co-parenting consistency (Zhao, 2022); no labeling; reduce stress.</p>`, check:["2 boyut + 4 stil","Behavioral vs psychological control","En az 2 çalışma","FE çıkarımları","Kültür ve etiket uyarısı"]}
+]});
+
+S.push({title:"Son tur: karışık flashcard", min:10, star:true, blocks:[
+{t:"cards", all:true, cards:[]},
+{t:"learn", h:"Sınava giderken", html:`
+<ul>
+<li>Soruyu oku ve sana hangi rolün verildiğine bak (teacher / specialist / designer). <span class="k">Birinci tekil şahısla</span> yaz: “As a teacher, I would…”</li>
+<li>“Don't describe” diyorsa: <mark>Its role is… It matters because… Without it…</mark></li>
+<li>Her paragrafta bir <span class="k">kaynak adı</span> geçsin: Lyons/Robbins/Smith · Coletta · Bronfenbrenner · Bowen · Kağıtçıbaşı · Baumrind · Epstein</li>
+<li>Her soruya <span class="k">1–2 empirical evidence</span></li>
+<li>Eksiklik dili kullanma: “ilgisiz aile” değil, “not yet reached”</li>
+<li>Zaman: soru başına ~35 dk; ilk 3 dk iskelet çıkar; son 10 dk kontrol</li>
+<li>Kapanış hep aynı: <span class="k">reciprocal, ongoing partnership around the child</span></li>
+</ul>
+<p class="score">Bitti. Su iç, yola çık. Başarılar!</p>`}
+]});
+
+/* ============ ENGINE ============ */
+const LS="pred416-sprint-v1";
+let st={step:0,sub:0,done:{},writes:{},checks:{},cards:{}};
+try{const r=localStorage.getItem(LS); if(r) st=Object.assign(st,JSON.parse(r));}catch(e){}
+function save(){try{localStorage.setItem(LS,JSON.stringify(st));}catch(e){}}
+
+const ALLCARDS=[]; S.forEach(s=>s.blocks.forEach(b=>{if(b.t==="cards"&&!b.all) b.cards.forEach(c=>ALLCARDS.push(c));}));
+const TOTAL=S.reduce((a,s)=>a+s.blocks.length,0);
+const $=id=>document.getElementById(id);
+const main=$("main");
+let cardState=null, mcqState=null;
+
+function flatIndex(){let n=0;for(let i=0;i<st.step;i++)n+=S[i].blocks.length;return n+st.sub;}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function render(){
+  const s=S[st.step], b=s.blocks[st.sub];
+  $("bar").style.width=(100*flatIndex()/(TOTAL-1))+"%";
+  let h=`<div class="eyebrow"><span>Adım ${st.step+1} / ${S.length}</span><span>· ~${s.min} dk</span>${s.star?'<span class="star">★ öncelikli</span>':'<span>isteğe bağlı</span>'}</div>
+  <h1>${s.title}</h1>
+  <div class="subprog">${s.blocks.map((_,i)=>`<span class="${i<st.sub?'done':i===st.sub?'now':''}"></span>`).join("")}</div>
+  <div class="card" id="blk"></div>`;
+  main.innerHTML=h;
+  const el=$("blk");
+  if(b.t==="learn") el.innerHTML=`<h2>${b.h}</h2>${b.html}`;
+  if(b.t==="cards") renderCards(el,b);
+  if(b.t==="mcq") renderMcq(el,b);
+  if(b.t==="write") renderWrite(el,b);
+  $("prevBtn").disabled = st.step===0&&st.sub===0;
+  const last = st.step===S.length-1&&st.sub===s.blocks.length-1;
+  $("nextBtn").textContent = last?"Bitti ✓": (st.sub===s.blocks.length-1?"Sonraki adım →":"Devam →");
+  window.scrollTo({top:0});
+  save();
+}
+
+function renderCards(el,b){
+  const key=st.step+"-"+st.sub;
+  if(!cardState||cardState.key!==key){
+    const src=b.all?shuffle(ALLCARDS):b.cards;
+    cardState={key,queue:src.map((_,i)=>i),src,flipped:false,known:0,total:src.length};
+  }
+  const c=cardState;
+  if(!c.queue.length){
+    el.innerHTML=`<h2>Deste bitti ✓</h2><p>${c.total} kartın hepsini bildin. “Devam”a bas.</p><div class="row"><button class="btn" id="again" type="button">Desteyi tekrarla</button></div>`;
+    $("again").onclick=()=>{cardState=null;render();};
+    return;
+  }
+  const card=c.src[c.queue[0]];
+  el.innerHTML=`<h2>Flashcard <span class="mini">· ${c.total-c.queue.length}/${c.total} biliniyor · ${c.queue.length} kaldı</span></h2>
+  <div class="flash ${c.flipped?'back':''}" id="flash" tabindex="0" role="button" aria-label="Kartı çevir">${c.flipped?`<div>${card[1]}</div>`:`<div><b>${card[0]}</b><span class="hint">Önce kafanda cevapla, sonra dokun (ya da Boşluk)</span></div>`}</div>
+  <div class="row">${c.flipped?`<button class="btn bad" id="no" type="button">Tekrar sor</button><button class="btn good" id="yes" type="button">Biliyorum ✓</button>`:`<button class="btn primary" id="flip" type="button">Cevabı göster</button>`}</div>`;
+  const flip=()=>{c.flipped=!c.flipped;renderCards(el,b);};
+  $("flash").onclick=flip;
+  if($("flip"))$("flip").onclick=flip;
+  if($("yes"))$("yes").onclick=()=>{c.queue.shift();c.flipped=false;renderCards(el,b);};
+  if($("no"))$("no").onclick=()=>{c.queue.push(c.queue.shift());c.flipped=false;renderCards(el,b);};
+}
+
+function renderMcq(el,b){
+  const key=st.step+"-"+st.sub;
+  if(!mcqState||mcqState.key!==key) mcqState={key,i:0,picked:null,score:0};
+  const m=mcqState;
+  if(m.i>=b.items.length){
+    el.innerHTML=`<h2>Quiz bitti</h2><p class="score">${m.score} / ${b.items.length}</p><p>${m.score===b.items.length?"Tam isabet. Devam!":"Yanlışların açıklamalarını bir kez daha düşün, sonra devam et."}</p><div class="row"><button class="btn" id="again" type="button">Tekrar çöz</button></div>`;
+    $("again").onclick=()=>{mcqState=null;render();};
+    return;
+  }
+  const it=b.items[m.i];
+  el.innerHTML=`<h2>Soru ${m.i+1} / ${b.items.length}</h2><p><b>${it.q}</b></p>
+  ${it.o.map((o,j)=>{let cls="";if(m.picked!==null){if(j===it.a)cls="right";else if(j===m.picked)cls="wrong";}return `<button class="opt ${cls}" data-j="${j}" type="button">${o}</button>`;}).join("")}
+  ${m.picked!==null?`<div class="note why">${m.picked===it.a?"✓ Doğru. ":"✗ Doğrusu: <b>"+it.o[it.a]+"</b>. "}${it.w}</div><div class="row"><button class="btn primary" id="nq" type="button">Sonraki soru</button></div>`:""}`;
+  el.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>{if(m.picked!==null)return;m.picked=+btn.dataset.j;if(m.picked===it.a)m.score++;renderMcq(el,b);});
+  if($("nq"))$("nq").onclick=()=>{m.i++;m.picked=null;renderMcq(el,b);};
+}
+
+function renderWrite(el,b){
+  const shown=!!(st.writes[b.id+"_shown"]);
+  const checks=st.checks[b.id]||[];
+  const got=checks.filter(Boolean).length;
+  el.innerHTML=`<h2>Kendi cevabını yaz</h2>
+  <p class="note"><b>${b.prompt}</b></p>
+  <p class="mini">${b.tip}</p>
+  <textarea id="ta" placeholder="İskeletini buraya yaz (ya da kâğıda; kâğıt sınava daha yakın)…">${(st.writes[b.id]||"").replace(/</g,"&lt;")}</textarea>
+  <div class="row"><button class="btn ${shown?'':'primary'}" id="show" type="button">${shown?"Model cevabı gizle":"Model cevabı göster"}</button></div>
+  ${shown?`<div class="model"><h2>Model cevap</h2>${b.model}
+  <h2 style="margin-top:18px">Kendini puanla: cevabında hangileri vardı?</h2>
+  <div class="chk">${b.check.map((c,i)=>`<label><input type="checkbox" data-i="${i}" ${checks[i]?"checked":""}><span>${c}</span></label>`).join("")}</div>
+  <p class="score" id="sc">${got} / ${b.check.length}</p>
+  <p class="mini">Eksik kalan maddeleri bir kez sesli tekrar et ya da kâğıda yaz, sonra devam et.</p></div>`:""}`;
+  $("ta").oninput=e=>{st.writes[b.id]=e.target.value;save();};
+  $("show").onclick=()=>{st.writes[b.id+"_shown"]=!shown;render();};
+  el.querySelectorAll(".chk input").forEach(inp=>inp.onchange=()=>{const a=st.checks[b.id]||[];a[+inp.dataset.i]=inp.checked;st.checks[b.id]=a;save();$("sc").textContent=a.filter(Boolean).length+" / "+b.check.length;});
+}
+
+function go(d){
+  const s=S[st.step];
+  if(d>0){
+    if(st.sub<s.blocks.length-1) st.sub++;
+    else if(st.step<S.length-1){st.done[st.step]=true;st.step++;st.sub=0;resetTimer();}
+    else {st.done[st.step]=true;}
+  } else {
+    if(st.sub>0) st.sub--;
+    else if(st.step>0){st.step--;st.sub=S[st.step].blocks.length-1;resetTimer();}
+  }
+  render();
+}
+$("nextBtn").onclick=()=>go(1);
+$("prevBtn").onclick=()=>go(-1);
+
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="TEXTAREA"||e.target.tagName==="INPUT")return;
+  if(!$("drawer").hidden){if(e.key==="Escape")$("drawer").hidden=true;return;}
+  if(e.key==="ArrowRight"){e.preventDefault();go(1);}
+  else if(e.key==="ArrowLeft"){e.preventDefault();go(-1);}
+  else if(e.key===" "&&$("flash")){e.preventDefault();$("flash").click();}
+  else if(cardState&&$("yes")&&(e.key==="1"||e.key==="2")){(e.key==="2"?$("yes"):$("no")).click();}
+});
+
+/* drawer */
+$("menuBtn").onclick=()=>{
+  $("drawerPanel").innerHTML=`<h2>Adımlar</h2><p class="mini">Sırayla gitmen önerilir; buradan sadece geri dönmek için zıpla.</p>`+
+   S.map((s,i)=>`<button class="step ${i===st.step?'cur':''}" data-i="${i}" type="button"><span class="n">${i+1}</span><span>${s.title} <span class="mini">· ${s.min} dk</span></span>${st.done[i]?'<span class="done-tick">✓</span>':''}</button>`).join("")+
+   `<div class="row"><button class="btn" id="closeD" type="button">Kapat</button><button class="btn bad" id="resetAll" type="button">İlerlemeyi sıfırla</button></div><p class="mini" id="resetMsg"></p>`;
+  $("drawer").hidden=false;
+  $("drawerPanel").querySelectorAll("button.step").forEach(b=>b.onclick=()=>{st.step=+b.dataset.i;st.sub=0;$("drawer").hidden=true;resetTimer();render();});
+  $("closeD").onclick=()=>$("drawer").hidden=true;
+  let armed=false;
+  $("resetAll").onclick=()=>{if(!armed){armed=true;$("resetMsg").textContent="Emin misin? Tekrar bas.";return;}st={step:0,sub:0,done:{},writes:{},checks:{},cards:{}};save();$("drawer").hidden=true;render();};
+};
+$("drawer").onclick=e=>{if(e.target.id==="drawer")$("drawer").hidden=true;};
+
+/* timers */
+const EXAM=new Date("2026-11-13T17:30:00+03:00").getTime();
+let tLeft=null, tRun=false, tInt=null;
+function resetTimer(){tRun=false;clearInterval(tInt);tLeft=S[st.step].min*60;$("timerBtn").textContent="Başlat";paintTimer();}
+function paintTimer(){
+  const m=Math.floor(Math.abs(tLeft)/60), s=Math.abs(tLeft)%60;
+  const el=$("stepTimer"); el.textContent=(tLeft<0?"+":"⏱ ")+m+":"+String(s).padStart(2,"0");
+  el.classList.toggle("warn",tLeft<=0);
+}
+$("timerBtn").onclick=()=>{
+  if(tRun){tRun=false;clearInterval(tInt);$("timerBtn").textContent="Devam";return;}
+  tRun=true;$("timerBtn").textContent="Duraklat";
+  tInt=setInterval(()=>{tLeft--;paintTimer();},1000);
+};
+function examTick(){
+  const d=EXAM-Date.now(); const el=$("examLeft");
+  if(d<=0){el.textContent="Sınav başladı";return;}
+  const h=Math.floor(d/3600000), m=Math.floor(d%3600000/60000);
+  el.textContent=`Sınava ${h}s ${m}dk`; el.classList.toggle("warn",d<45*60000);
+}
+setInterval(examTick,30000); examTick();
+
+if(st.step>=S.length) {st.step=0;st.sub=0;}
+if(st.sub>=S[st.step].blocks.length) st.sub=0;
+resetTimer();
+render();
+</script>
+
+</body>
+</html>
