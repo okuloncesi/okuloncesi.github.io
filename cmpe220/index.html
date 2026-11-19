@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CmpE 220 Proof Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Proof-writing study app for the CmpE 220 Discrete Mathematics exam.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: graph-paper notebook. Sticky tab bar, one 900px column, proof steps set like a formal derivation. */
+:root{
+  --paper:#f3f5f8; --sheet:#ffffff; --ink:#18212f; --muted:#5a6678; --rule:#dde3ec; --grid:#e7ecf3;
+  --pen:#2647a8; --pen-soft:#e6ecfa; --qed:#b26a00; --qed-soft:#fbf0dc;
+  --ok:#1f7a4d; --ok-soft:#e1f3ea; --bad:#b2352b; --bad-soft:#fbe6e3; --mid:#8a6d00; --mid-soft:#f7efcf;
+  --f-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-math:"STIX Two Text","Cambria Math","Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#11161e; --sheet:#18202b; --ink:#e4e9f1; --muted:#97a3b6; --rule:#2a3442; --grid:#1a222d;
+  --pen:#8aa6ff; --pen-soft:#1f2b48; --qed:#f0b04a; --qed-soft:#3a2c14;
+  --ok:#5fcf95; --ok-soft:#173226; --bad:#f28b80; --bad-soft:#3d1f1c; --mid:#e5c75a; --mid-soft:#352e14; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#11161e; --sheet:#18202b; --ink:#e4e9f1; --muted:#97a3b6; --rule:#2a3442; --grid:#1a222d;
+  --pen:#8aa6ff; --pen-soft:#1f2b48; --qed:#f0b04a; --qed-soft:#3a2c14;
+  --ok:#5fcf95; --ok-soft:#173226; --bad:#f28b80; --bad-soft:#3d1f1c; --mid:#e5c75a; --mid-soft:#352e14; color-scheme:dark }
+*{box-sizing:border-box}
+html,body{background:var(--paper);color:var(--ink)}
+body{margin:0;font:16px/1.6 var(--f-ui);-webkit-text-size-adjust:100%;overflow-x:hidden;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--sheet)}
+header{background:var(--sheet);border-bottom:1px solid var(--rule);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.wrap{max-width:900px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:10px;padding-block:10px 0}
+.brand h1{font:600 1.05rem/1.2 var(--f-ui);margin:0;letter-spacing:.01em}
+.brand h1 b{font-family:var(--f-math);font-style:italic;color:var(--pen);font-weight:600}
+.brand .sp{flex:1}
+.iconbtn{border:1px solid var(--rule);background:transparent;color:var(--ink);border-radius:999px;padding:4px 11px;cursor:pointer;font:500 .82rem var(--f-ui)}
+nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-top:4px}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:0 0 auto;border:0;background:none;color:var(--muted);padding:9px 11px;font:600 .9rem var(--f-ui);cursor:pointer;border-bottom:3px solid transparent}
+nav button.on{color:var(--pen);border-bottom-color:var(--pen)}
+main{padding-block:20px 90px}
+h2{font:700 1.4rem/1.25 var(--f-ui);margin:.1em 0 .5em;text-wrap:balance}
+h3{font:700 1.06rem/1.3 var(--f-ui);margin:1.5em 0 .45em;color:var(--pen);text-wrap:balance}
+h4{font:700 .98rem/1.3 var(--f-ui);margin:.1em 0 .45em}
+p{margin:.45em 0}
+a{color:var(--pen)}
+.m,.math{font-family:var(--f-math);font-size:1.07em}
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);padding:16px 18px;margin-bottom:14px;min-width:0}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.eyebrow{font:600 .72rem/1 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sp{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.chip{border:1px solid var(--rule);background:var(--sheet);color:var(--ink);border-radius:999px;padding:4px 11px;font:500 .83rem var(--f-ui);cursor:pointer}
+.chip.on{background:var(--pen);border-color:var(--pen);color:var(--sheet)}
+.btn{border:0;background:var(--pen);color:var(--sheet);border-radius:9px;padding:9px 15px;font:600 .92rem var(--f-ui);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--pen);border:1px solid var(--pen)}
+.btn.qed{background:var(--qed);color:var(--sheet)}
+.btn.sm{padding:6px 11px;font-size:.84rem}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--pen);outline-offset:2px}
+table{border-collapse:collapse;margin:.5em 0 1em;font-size:.92rem;width:100%}
+.tw{overflow-x:auto}
+th,td{border-bottom:1px solid var(--rule);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--pen-soft);font-weight:600}
+ul,ol{padding-left:1.25em;margin:.35em 0}
+li{margin:.15em 0}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+.tip{background:var(--qed-soft);border-left:3px solid var(--qed);padding:8px 12px;border-radius:6px;margin:.6em 0}
+.warn{background:var(--bad-soft);border-left:3px solid var(--bad);padding:8px 12px;border-radius:6px;margin:.6em 0}
+.def{background:var(--pen-soft);border-radius:8px;padding:8px 12px;margin:.5em 0}
+.def b:first-child{color:var(--pen)}
+.vid{font-size:.85rem;color:var(--muted)}
+.vid a{font-family:var(--f-mono);font-size:.82rem}
+/* proof blocks */
+.proof{border-left:2px solid var(--pen);padding:4px 0 4px 14px;margin:.6em 0}
+.proof::after{content:"\220E";display:block;text-align:right;color:var(--qed);font-size:1.1rem;line-height:1}
+.deriv{font-family:var(--f-math);counter-reset:ln;margin:.5em 0;padding:0;list-style:none}
+.deriv li{counter-increment:ln;display:grid;grid-template-columns:2.2em 1fr auto;gap:8px;padding:3px 0;border-bottom:1px dashed var(--rule)}
+.deriv li::before{content:counter(ln) ".";color:var(--muted);font-family:var(--f-mono);font-size:.8rem;padding-top:3px}
+.deriv li i.why{font-family:var(--f-ui);font-style:normal;font-size:.8rem;color:var(--muted);text-align:right}
+/* home tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.tile{text-align:left;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);border-radius:var(--r);padding:14px;cursor:pointer;font:inherit}
+.tile b{display:block;font-size:1rem;margin-bottom:2px}
+.tile span{font-size:.84rem;color:var(--muted)}
+.tile:hover{border-color:var(--pen)}
+.hero{border-top:3px solid var(--pen)}
+.stat{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.stat div{font-variant-numeric:tabular-nums}
+.stat b{font-size:1.35rem;color:var(--pen);margin-right:4px}
+/* notes */
+details.topic{background:var(--sheet);border:1px solid var(--rule);border-radius:var(--r);margin-bottom:10px}
+details.topic>summary{cursor:pointer;padding:13px 16px;font-weight:700;list-style:none;display:flex;gap:10px;align-items:center}
+details.topic>summary::-webkit-details-marker{display:none}
+details.topic>summary .tg{font:600 .72rem var(--f-mono);background:var(--pen);color:var(--sheet);border-radius:6px;padding:2px 7px}
+details.topic>summary .ct{margin-left:auto;font-weight:400;color:var(--muted);font-size:.82rem}
+details.topic .body{padding:0 16px 14px;min-width:0}
+/* problem map */
+.pmap{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 14px}
+.pmap button{width:34px;height:30px;border-radius:7px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);font:600 .78rem var(--f-mono);cursor:pointer}
+.pmap button.cur{outline:2px solid var(--pen);outline-offset:1px}
+.pmap button.s3{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.pmap button.s2{background:var(--mid-soft);border-color:var(--mid);color:var(--mid)}
+.pmap button.s1{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.stmt{font-size:1.04rem;line-height:1.7}
+.meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.badge{font:600 .72rem var(--f-mono);border:1px solid var(--rule);border-radius:6px;padding:2px 7px;color:var(--muted)}
+.badge.t{color:var(--pen);border-color:var(--pen)}
+.dots{letter-spacing:2px;color:var(--qed);font-size:.8rem}
+.step{margin-top:14px;padding-top:12px;border-top:1px dashed var(--rule)}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt{border:1px solid var(--rule);background:var(--sheet);color:var(--ink);border-radius:8px;padding:7px 11px;cursor:pointer;font:500 .88rem var(--f-ui)}
+.opt.good{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.opt.badc{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.opt:disabled{cursor:default}
+textarea{width:100%;min-height:150px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-math);padding:10px 12px;resize:vertical}
+.symbar{display:flex;flex-wrap:wrap;gap:3px;margin:6px 0}
+.symbar button{min-width:30px;height:28px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);border-radius:6px;cursor:pointer;font:16px var(--f-math)}
+.hint{background:var(--qed-soft);border-radius:8px;padding:8px 12px;margin:6px 0}
+.hint b{color:var(--qed)}
+.model{background:var(--sheet);border:1px solid var(--pen);border-radius:10px;padding:12px 14px;margin-top:10px;min-width:0}
+.rub label{display:flex;gap:8px;align-items:flex-start;margin:4px 0;cursor:pointer}
+.rub input{margin-top:5px}
+.selfbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.selfbtns button{flex:1 1 120px}
+.b-ok{background:var(--ok)!important} .b-mid{background:var(--mid)!important} .b-bad{background:var(--bad)!important}
+/* find the bug */
+.lines{list-style:none;padding:0;margin:.6em 0;counter-reset:l}
+.lines li{counter-increment:l;display:grid;grid-template-columns:2em 1fr;gap:8px;padding:7px 10px;border:1px solid var(--rule);border-radius:8px;margin:5px 0;cursor:pointer;background:var(--sheet);font-family:var(--f-math)}
+.lines li::before{content:counter(l);font:600 .8rem var(--f-mono);color:var(--muted);padding-top:2px}
+.lines li .r{display:block;font:500 .8rem var(--f-ui);color:var(--muted)}
+.lines li:hover{border-color:var(--pen)}
+.lines li.good{background:var(--ok-soft);border-color:var(--ok)}
+.lines li.badc{background:var(--bad-soft);border-color:var(--bad)}
+.lines.done li{cursor:default}
+/* flashcards */
+.flash{perspective:1200px;min-height:250px;cursor:pointer;margin-bottom:12px;display:grid}
+.flash .inner{position:relative;display:grid;transition:transform .45s;transform-style:preserve-3d}
+.flash.flip .inner{transform:rotateY(180deg)}
+.flash .face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--r);border:1px solid var(--rule);background:var(--sheet);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:34px 20px 22px;text-align:center;min-height:250px}
+.flash .front{font-size:1.2rem;font-weight:600}
+.flash .back{transform:rotateY(180deg);background:var(--pen-soft);font-family:var(--f-math);font-size:1.05rem}
+.flash .tag{position:absolute;top:10px;left:14px;font:600 .72rem var(--f-mono);color:var(--muted)}
+.progress{height:5px;background:var(--rule);border-radius:5px;overflow:hidden;margin:6px 0 12px}
+.progress>i{display:block;height:100%;background:var(--pen);transition:width .3s}
+.verdict{font:700 .95rem var(--f-ui);margin:.4em 0}
+.verdict.y{color:var(--ok)} .verdict.n{color:var(--bad)}
+.timer{font:600 1.6rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--pen)}
+.timer.low{color:var(--bad)}
+.kbd{font:500 .75rem var(--f-mono);color:var(--muted)}
+@media (max-width:520px){ .deriv li{grid-template-columns:1.8em 1fr} .deriv li i.why{grid-column:2;text-align:left} }
+@media (prefers-reduced-motion:reduce){ .flash .inner{transition:none} }
+</style>
+
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand"><h1>CmpE 220 <b>Proof Lab</b></h1><span class="sp"></span>
+    <button class="iconbtn" id="themeBtn" title="Switch light or dark">◐ Theme</button></div>
+  <nav id="nav" aria-label="Sections"></nav>
+</div></header>
+<main class="wrap" id="app"></main>
+<script src="data.js"></script>
+<script src="data_a.js"></script>
+<script src="data_b.js"></script>
+<script src="data_c.js"></script>
+<script src="data_lec.js"></script>
+<script src="data_notes.js"></script>
+<script>
+(function(){
+const D = window.DATA;
+const $ = s => document.querySelector(s);
+const app = $('#app');
+const NS='cmpe220:';
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem(NS+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(NS+k, JSON.stringify(v)); }catch(e){} }
+};
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const topicName = id => { const t=D.topics.find(x=>x.id===id); return t? t.short : id; };
+const TECH = D.techniques;
+
+(function(){ const t=store.get('theme',null); if(t) document.documentElement.dataset.theme=t; })();
+$('#themeBtn').onclick=()=>{ const cur=document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'); const nx=cur==='dark'?'light':'dark'; document.documentElement.dataset.theme=nx; store.set('theme',nx); };
+
+const TABS=[['home','Start'],['toolkit','Toolkit'],['notes','Notes'],['lab','Proof lab'],['pd','Prove or disprove'],['bug','Find the bug'],['cards','Flashcards'],['mock','Mock exam']];
+let tab=(location.hash||'#home').slice(1); if(!TABS.find(t=>t[0]===tab)) tab='home';
+function renderNav(){ $('#nav').innerHTML=TABS.map(([k,l])=>`<button data-k="${k}" class="${k===tab?'on':''}">${l}</button>`).join(''); }
+$('#nav').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) go(b.dataset.k); });
+function go(k){ tab=k; if(location.hash!=='#'+k) location.hash=k; renderNav(); render(); window.scrollTo(0,0); const on=$('#nav .on'); if(on) on.scrollIntoView({inline:'center',block:'nearest'}); }
+window.addEventListener('hashchange',()=>{ const k=location.hash.slice(1); if(k!==tab && TABS.find(t=>t[0]===k)){ tab=k; renderNav(); render(); } });
+
+function topicChips(sel,onPick,ids){
+  const list=[['all','All topics']].concat(D.topics.filter(t=>!ids||ids.includes(t.id)).map(t=>[t.id,t.short]));
+  setTimeout(()=>app.querySelectorAll('.chips .chip[data-t]').forEach(b=>b.onclick=()=>onPick(b.dataset.t)));
+  return `<div class="chips">${list.map(([v,l])=>`<button class="chip ${sel===v?'on':''}" data-t="${v}">${esc(l)}</button>`).join('')}</div>`;
+}
+const SYMS='∀ ∃ ¬ ∧ ∨ ⇒ ⇔ ≡ ∈ ∉ ⊆ ⊄ ∪ ∩ ∖ × ∅ 𝒫 ℕ ℤ ℚ ℝ ≤ ≥ ≠ ∣ ∤ ∘ ⁻¹ ↦ ∎'.split(' ');
+function symbar(id){ setTimeout(()=>{ const bar=document.getElementById('sb-'+id); if(!bar) return; bar.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const ta=document.getElementById(id); const s=ta.selectionStart,en=ta.selectionEnd; ta.value=ta.value.slice(0,s)+b.textContent+ta.value.slice(en); ta.selectionStart=ta.selectionEnd=s+b.textContent.length; ta.focus(); ta.dispatchEvent(new Event('input')); }; }); return `<div class="symbar" id="sb-${id}">${SYMS.map(s=>`<button type="button" tabindex="-1">${s}</button>`).join('')}</div>`; }
+
+/* ---------- HOME ---------- */
+function home(){
+  const st=store.get('lab',{}); const vals=Object.values(st);
+  const n3=vals.filter(v=>v===3).length, n2=vals.filter(v=>v===2).length, n1=vals.filter(v=>v===1).length;
+  const pd=store.get('pd',{}); const pdA=Object.keys(pd).length, pdC=Object.values(pd).filter(Boolean).length;
+  const bug=store.get('bug',{}); const bgA=Object.keys(bug).length, bgC=Object.values(bug).filter(Boolean).length;
+  app.innerHTML=`
+  <div class="sheet hero"><div class="eyebrow">CmpE 220 · Discrete Mathematics · exam tomorrow</div>
+  <h2 style="margin-top:.35em">Open-ended proofs. Every point comes from a written argument.</h2>
+  <p>Built from the 9 problem-session sets and the 13 lecture videos (Birkan Yılmaz, weeks 1–7). Each proof problem has a technique check, hints that reveal one step at a time, a space to write your own proof, a model proof and a grading rubric.</p>
+  <div class="stat small"><div><b>${D.problems.length}</b>proof problems</div><div><b>${D.pd.length}</b>prove-or-disprove</div><div><b>${D.bugs.length}</b>broken proofs</div><div><b>${D.cards.length}</b>flashcards</div></div></div>
+  <div class="tiles">
+    <button class="tile" data-go="toolkit"><b>Toolkit</b><span>Templates: how to start every kind of proof</span></button>
+    <button class="tile" data-go="notes"><b>Notes</b><span>${D.topics.length} topics, definitions and lecture highlights</span></button>
+    <button class="tile" data-go="lab"><b>Proof lab</b><span>${n3} solid · ${n2} shaky · ${n1} missed · ${D.problems.length-vals.length} untried</span></button>
+    <button class="tile" data-go="pd"><b>Prove or disprove</b><span>${pdC}/${pdA} correct so far</span></button>
+    <button class="tile" data-go="bug"><b>Find the bug</b><span>${bgC}/${bgA} bugs found</span></button>
+    <button class="tile" data-go="mock"><b>Mock exam</b><span>Timed, mixed topics, self-graded</span></button>
+  </div>
+  <div class="sheet" style="margin-top:14px">${D.plan}</div>
+  <div class="sheet small muted">Progress is saved in this browser only.
+  <div class="row" style="margin-top:8px"><button class="btn ghost sm" id="reset">Reset my progress</button><span id="rs"></span></div></div>`;
+  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+  let armed=false; $('#reset').onclick=()=>{ if(!armed){ armed=true; $('#rs').textContent='Tap again to erase all progress.'; return; } ['lab','pd','bug','known','drafts','mockBest'].forEach(k=>store.set(k,k==='mockBest'?null:{})); home(); };
+}
+
+function toolkit(){ app.innerHTML=`<h2>Proof toolkit</h2><p class="muted small">How to start, what to write, and what loses points. Read this last thing before the exam.</p>`+D.toolkit; }
+function notes(){
+  app.innerHTML=`<h2>Notes by topic</h2><p class="muted small">Definitions, key results and what the lecturer stressed. Timestamps open the lecture video at that moment.</p>`+
+  D.topics.map((t,i)=>`<details class="topic" ${i===0?'open':''}><summary><span class="tg">${esc(t.short)}</span>${esc(t.name)}<span class="ct">${D.problems.filter(p=>p.topic===t.id).length} problems</span></summary><div class="body">${D.notes[t.id]||''}</div></details>`).join('')+
+  `<h3>Lecture videos</h3><div class="sheet small tw"><table><tr><th>Lecture</th><th>Topics</th></tr>${D.videos.map(v=>`<tr><td><a href="https://youtu.be/${v.id}" target="_blank" rel="noopener">${esc(v.title)}</a></td><td>${esc(v.topics)}</td></tr>`).join('')}</table></div>`;
+}
+
+/* ---------- PROOF LAB ---------- */
+let lab={topic:'all',filter:'all',i:0,techPick:null,hints:0,show:false};
+function labPool(){ const st=store.get('lab',{}); return D.problems.filter(p=>(lab.topic==='all'||p.topic===lab.topic)&&(lab.filter==='all'||(lab.filter==='todo'&&!st[p.id])||(lab.filter==='weak'&&st[p.id]&&st[p.id]<3))); }
+// The lecturer accepts only these techniques; finer strategies map onto them.
+const CORE={direct:'Direct proof',cases:'Proof by cases',contra:'Proof by contrapositive',contradiction:'Proof by contradiction',iff:'Biconditional (both directions)',induction:'Mathematical induction',strong:'Strong induction',pigeon:'Pigeonhole principle',counter:'Disprove: counterexample',inference:'Formal derivation (rules of inference)'};
+const TO_CORE={props:'direct',double:'direct',construct:'direct',chain:'direct',sup:'direct',count:'direct',bijection:'direct',diag:'contradiction',wop:'contradiction'};
+const coreOf=p=>[...new Set(p.tech.map(k=>TO_CORE[k]||k))].filter(k=>CORE[k]);
+const stratOf=p=>p.tech.filter(k=>TO_CORE[k]).map(k=>TECH[k]);
+function techOptions(p){ const correct=coreOf(p); const others=shuffle(Object.keys(CORE).filter(k=>!correct.includes(k))).slice(0,Math.max(2,5-correct.length)); return shuffle(correct.slice(0,3).concat(others)); }
+function labView(){
+  const st=store.get('lab',{}); const drafts=store.get('drafts',{});
+  const pool=labPool(); if(lab.i>=pool.length) lab.i=0;
+  const p=pool[lab.i];
+  let h=`<h2>Proof lab</h2>`+topicChips(lab.topic,t=>{lab.topic=t;lab.i=0;reset();labView();})+
+   `<div class="row small" style="margin:-4px 0 6px"><span class="muted">Show:</span>${[['all','All'],['todo','Not tried'],['weak','Shaky or missed']].map(([k,l])=>`<button class="chip ${lab.filter===k?'on':''}" data-f="${k}">${l}</button>`).join('')}</div>`+
+   `<div class="pmap">${pool.map((q,i)=>`<button class="${i===lab.i?'cur':''} ${st[q.id]?'s'+st[q.id]:''}" data-i="${i}" title="${esc(q.title)}">${i+1}</button>`).join('')}</div>`;
+  if(!p){ app.innerHTML=h+`<div class="sheet">Nothing here with this filter. Pick another filter or topic.</div>`; bindLab(); return; }
+  if(!lab.opts||lab.optsFor!==p.id){ lab.opts=techOptions(p); lab.optsFor=p.id; }
+  h+=`<div class="sheet"><div class="meta"><span class="badge t">${esc(topicName(p.topic))}</span><span class="badge">${esc(p.src)}</span><span class="dots" title="difficulty">${'●'.repeat(p.diff)}${'○'.repeat(3-p.diff)}</span><span class="sp"></span><span class="kbd">${lab.i+1} / ${pool.length}</span></div>
+  <h4>${p.title}</h4><div class="stmt">${p.statement}</div>
+  <div class="step"><div class="eyebrow">Step 1 · Which technique will you name in your first sentence?</div><div class="opts" style="margin-top:8px">${lab.opts.map(k=>{ let c=''; if(lab.techPick){ if(coreOf(p).includes(k)) c='good'; else if(lab.techPick===k) c='badc'; } return `<button class="opt ${c}" data-tech="${k}" ${lab.techPick?'disabled':''}>${esc(CORE[k])}</button>`; }).join('')}</div>
+  ${lab.techPick?`<p class="small" style="margin-top:8px">${coreOf(p).includes(lab.techPick)?'<b style="color:var(--ok)">Good choice.</b> ':'<b style="color:var(--bad)">Not the best route.</b> '}${p.why||''}${stratOf(p).length?` <span class="muted">Strategy: ${esc(stratOf(p).join(', '))}.</span>`:''}</p>`:''}</div>
+  <div class="step"><div class="eyebrow">Step 2 · Write your proof</div>${symbar('draft')}<textarea id="draft" placeholder="Start with what you assume, e.g. “Let x ∈ A be arbitrary…”">${esc(drafts[p.id]||'')}</textarea>
+  ${p.hints.slice(0,lab.hints).map((x,i)=>`<div class="hint"><b>Hint ${i+1}.</b> ${x}</div>`).join('')}
+  <div class="row" style="margin-top:8px">${lab.hints<p.hints.length?`<button class="btn ghost sm" id="hint">Show hint ${lab.hints+1} of ${p.hints.length}</button>`:''}<span class="sp"></span><button class="btn qed" id="show">${lab.show?'Hide':'Show'} model proof</button></div></div>
+  ${lab.show?`<div class="model"><div class="eyebrow" style="margin-bottom:6px">Model proof</div>${p.proof}
+   ${p.notes?`<div class="tip small">${p.notes}</div>`:''}
+   <div class="step rub"><div class="eyebrow">Grade yourself: what a full-mark answer contains</div>${p.rubric.map((r,i)=>`<label><input type="checkbox" id="rb${i}"> <span>${r}</span></label>`).join('')}
+   <div class="selfbtns"><button class="btn b-ok" data-s="3">Got it all</button><button class="btn b-mid" data-s="2">Partly</button><button class="btn b-bad" data-s="1">Missed it</button></div></div></div>`:''}
+  </div>
+  <div class="row"><button class="btn ghost" id="prev">← Previous</button><span class="sp"></span><button class="btn ghost" id="next">Next →</button></div>`;
+  app.innerHTML=h; bindLab(p);
+}
+function reset(){ lab.techPick=null; lab.hints=0; lab.show=false; }
+function bindLab(p){
+  app.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{lab.filter=b.dataset.f;lab.i=0;reset();labView();});
+  app.querySelectorAll('.pmap [data-i]').forEach(b=>b.onclick=()=>{lab.i=+b.dataset.i;reset();labView();});
+  if(!p) return;
+  const pool=labPool();
+  app.querySelectorAll('[data-tech]').forEach(b=>b.onclick=()=>{lab.techPick=b.dataset.tech;labView();});
+  const ta=$('#draft'); ta.oninput=()=>{ const d=store.get('drafts',{}); d[p.id]=ta.value; store.set('drafts',d); };
+  const hb=$('#hint'); if(hb) hb.onclick=()=>{lab.hints++;labView();};
+  $('#show').onclick=()=>{lab.show=!lab.show;labView(); if(lab.show){ const m=app.querySelector('.model'); if(m) m.scrollIntoView({behavior:'smooth',block:'start'}); }};
+  app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{ const st=store.get('lab',{}); st[p.id]=+b.dataset.s; store.set('lab',st); if(lab.filter==='all') lab.i=(lab.i+1)%pool.length; reset(); labView(); window.scrollTo(0,0); });
+  $('#prev').onclick=()=>{lab.i=(lab.i-1+pool.length)%pool.length;reset();labView();window.scrollTo(0,0);};
+  $('#next').onclick=()=>{lab.i=(lab.i+1)%pool.length;reset();labView();window.scrollTo(0,0);};
+}
+
+/* ---------- PROVE OR DISPROVE ---------- */
+let pdS={topic:'all',order:null,i:0,ans:null,streak:0};
+function pdView(){
+  const rec=store.get('pd',{});
+  let pool=D.pd.map((x,i)=>i).filter(i=>pdS.topic==='all'||D.pd[i].topic===pdS.topic);
+  if(!pdS.order||pdS.order.length!==pool.length) { pdS.order=shuffle(pool); pdS.i=0; }
+  const n=pdS.order.length; const q=D.pd[pdS.order[pdS.i]];
+  const tot=pool.filter(i=>i in rec).length, ok=pool.filter(i=>rec[i]).length;
+  let h=`<h2>Prove or disprove</h2><p class="muted small">Decide first, then read the argument. A “false” verdict needs one concrete counterexample; a “true” verdict needs a general proof.</p>`+
+   topicChips(pdS.topic,t=>{pdS.topic=t;pdS.order=null;pdS.ans=null;pdView();},[...new Set(D.pd.map(x=>x.topic))])+
+   `<div class="row small muted"><span>${pdS.i+1} / ${n}</span><span class="sp"></span><span>Streak ${pdS.streak} · ${ok}/${tot} right in this set</span></div><div class="progress"><i style="width:${(pdS.i+1)/n*100}%"></i></div>`;
+  h+=`<div class="sheet"><div class="meta"><span class="badge t">${esc(topicName(q.topic))}</span>${q.src?`<span class="badge">${esc(q.src)}</span>`:''}</div><div class="stmt">${q.s}</div>
+  <div class="row" style="margin-top:12px"><button class="btn ${pdS.ans===null?'':(q.a?'b-ok':'')}" data-a="1" ${pdS.ans!==null?'disabled':''}>True: prove it</button><button class="btn ${pdS.ans===null?'':(!q.a?'b-ok':'')}" data-a="0" ${pdS.ans!==null?'disabled':''}>False: counterexample</button></div>
+  ${pdS.ans!==null?`<p class="verdict ${pdS.ans===q.a?'y':'n'}">${pdS.ans===q.a?'Correct.':'Not quite.'} The statement is ${q.a?'TRUE':'FALSE'}.</p><div class="proof np">${q.why}</div>`:''}
+  </div><div class="row"><button class="btn ghost" id="pp">← Previous</button><span class="sp"></span><button class="btn" id="pn">Next →</button></div>`;
+  app.innerHTML=h;
+  app.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{ pdS.ans=b.dataset.a==='1'; const r=store.get('pd',{}); const right=pdS.ans===q.a; r[pdS.order[pdS.i]]=right; store.set('pd',r); pdS.streak=right?pdS.streak+1:0; pdView(); });
+  $('#pp').onclick=()=>{pdS.i=(pdS.i-1+n)%n;pdS.ans=null;pdView();};
+  $('#pn').onclick=()=>{pdS.i=(pdS.i+1)%n;pdS.ans=null;pdView();};
+}
+
+/* ---------- FIND THE BUG ---------- */
+let bg={i:0,pick:null};
+function bugView(){
+  const rec=store.get('bug',{}); const n=D.bugs.length; const b=D.bugs[bg.i];
+  let h=`<h2>Find the bug</h2><p class="muted small">Each “proof” below has a flaw. Tap the first line that does not follow. Graders hunt for exactly these mistakes.</p>
+  <div class="pmap">${D.bugs.map((x,i)=>`<button class="${i===bg.i?'cur':''} ${i in rec?(rec[i]?'s3':'s1'):''}" data-i="${i}">${i+1}</button>`).join('')}</div>
+  <div class="sheet"><div class="meta"><span class="badge t">${esc(topicName(b.topic))}</span>${b.src?`<span class="badge">${esc(b.src)}</span>`:''}</div>
+  <div class="stmt"><b>Claim.</b> ${b.claim}</div>
+  <ol class="lines ${bg.pick!==null?'done':''}">${b.lines.map((l,i)=>{ let c=''; if(bg.pick!==null){ if(b.bad.includes(i)) c='good'; else if(bg.pick===i) c='badc'; } return `<li data-l="${i}" class="${c}"><span>${l[0]}${l[1]?`<span class="r">${l[1]}</span>`:''}</span></li>`; }).join('')}</ol>
+  ${bg.pick!==null?`<p class="verdict ${b.bad.includes(bg.pick)?'y':'n'}">${b.bad.includes(bg.pick)?'You found it.':'That line is fine. The faulty line is highlighted in green.'}</p><div class="proof np">${b.explain}</div>`:''}
+  </div><div class="row"><button class="btn ghost" id="bp">← Previous</button><span class="sp"></span><button class="btn" id="bn">Next →</button></div>`;
+  app.innerHTML=h;
+  app.querySelectorAll('.pmap [data-i]').forEach(x=>x.onclick=()=>{bg.i=+x.dataset.i;bg.pick=null;bugView();});
+  if(bg.pick===null) app.querySelectorAll('.lines [data-l]').forEach(x=>x.onclick=()=>{ bg.pick=+x.dataset.l; const r=store.get('bug',{}); r[bg.i]=b.bad.includes(bg.pick); store.set('bug',r); bugView(); });
+  $('#bp').onclick=()=>{bg.i=(bg.i-1+n)%n;bg.pick=null;bugView();};
+  $('#bn').onclick=()=>{bg.i=(bg.i+1)%n;bg.pick=null;bugView();};
+}
+
+/* ---------- FLASHCARDS ---------- */
+let fc={topic:'all',only:false,order:null,i:0,flip:false};
+function cards(){
+  const known=store.get('known',{});
+  let pool=D.cards.map((c,idx)=>({c,idx})).filter(x=>fc.topic==='all'||x.c[0]===fc.topic);
+  if(fc.only) pool=pool.filter(x=>!known[x.idx]);
+  if(!fc.order||fc.order.length!==pool.length||fc.order.some(i=>!pool.find(p=>p.idx===i))){ fc.order=pool.map(p=>p.idx); fc.i=0; }
+  const n=fc.order.length; if(fc.i>=n) fc.i=0;
+  const cur=n?D.cards[fc.order[fc.i]]:null, ci=n?fc.order[fc.i]:null;
+  app.innerHTML=`<h2>Flashcards</h2>`+topicChips(fc.topic,t=>{fc.topic=t;fc.order=null;fc.flip=false;cards();},[...new Set(D.cards.map(c=>c[0]))])+
+  `<div class="row small"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="ou" ${fc.only?'checked':''}> Only cards I don't know yet</label><span class="sp"></span><button class="btn ghost sm" id="shuf">Shuffle</button></div>
+  <div class="progress"><i style="width:${n?(fc.i+1)/n*100:0}%"></i></div>`+
+  (cur?`<div class="flash ${fc.flip?'flip':''}" id="fl"><div class="inner"><div class="face front"><span class="tag">${esc(topicName(cur[0]))} · ${fc.i+1}/${n}</span>${cur[1]}<div class="kbd" style="margin-top:14px">tap or press space to flip</div></div><div class="face back"><span class="tag">${esc(topicName(cur[0]))}</span><div>${cur[2]}</div></div></div></div>
+  <div class="row"><button class="btn ghost" id="prev">←</button><span class="sp"></span><button class="btn b-mid" id="again">Still learning</button><button class="btn b-ok" id="got">I know it</button></div>`
+  :`<div class="sheet">Every card in this set is marked known. <button class="btn ghost sm" id="clr">Unmark all</button></div>`);
+  $('#ou').onchange=e=>{fc.only=e.target.checked;fc.order=null;cards();};
+  $('#shuf').onclick=()=>{fc.order=shuffle(pool.map(p=>p.idx));fc.i=0;fc.flip=false;cards();};
+  if(cur){ $('#fl').onclick=()=>{fc.flip=!fc.flip;$('#fl').classList.toggle('flip');};
+    $('#prev').onclick=()=>{fc.i=(fc.i-1+n)%n;fc.flip=false;cards();};
+    $('#again').onclick=()=>{known[ci]=false;store.set('known',known);fc.i=(fc.i+1)%n;fc.flip=false;cards();};
+    $('#got').onclick=()=>{known[ci]=true;store.set('known',known);if(fc.only)fc.order.splice(fc.i,1);else fc.i=(fc.i+1)%n;fc.flip=false;cards();};
+  } else { $('#clr').onclick=()=>{pool.forEach(p=>known[p.idx]=false);store.set('known',known);fc.order=null;cards();}; }
+}
+document.addEventListener('keydown',e=>{ if(tab!=='cards'||e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT') return; if(e.key===' '){e.preventDefault();const f=$('#fl');if(f)f.click();} if(e.key==='ArrowRight'){const b=$('#got');if(b)b.click();} if(e.key==='ArrowLeft'){const b=$('#prev');if(b)b.click();} });
+
+/* ---------- MOCK EXAM ---------- */
+let mk={state:'setup',mins:90,qs:[],end:0,tick:null,scores:{}};
+function pickMock(){
+  const groups=D.mockGroups; const out=[];
+  groups.forEach(g=>{ const c=shuffle(D.problems.filter(p=>g.includes(p.topic)&&p.diff>=2)); if(c.length) out.push(c[0]); });
+  return out;
+}
+function mock(){
+  if(mk.state==='setup'){
+    const best=store.get('mockBest',null);
+    app.innerHTML=`<h2>Mock exam</h2><div class="sheet"><p>You get ${D.mockGroups.length} proof questions, one from each block of the course: logic and proof techniques, induction, sets, relations, functions, and cardinality. Write on paper or in the boxes. When time is up (or you finish), compare with the model proofs and score each question out of 10 using the rubric.</p>
+    <div class="row" style="margin:10px 0"><span class="small muted">Time:</span>${[45,60,90,120].map(m=>`<button class="chip ${mk.mins===m?'on':''}" data-m="${m}">${m} min</button>`).join('')}</div>
+    <button class="btn" id="start">Start the mock exam</button>${best!==null?`<p class="small muted">Best so far: ${best}%</p>`:''}</div>`;
+    app.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mk.mins=+b.dataset.m;mock();});
+    $('#start').onclick=()=>{ mk.qs=pickMock(); mk.end=Date.now()+mk.mins*60000; mk.state='run'; mk.scores={}; mk.ans={}; mock(); };
+    return;
+  }
+  if(mk.state==='run'){
+    app.innerHTML=`<div class="row" style="position:sticky;top:calc(env(safe-area-inset-top,0px) + 92px);background:var(--paper);padding:6px 0;z-index:5"><h2 style="margin:0">Mock exam</h2><span class="sp"></span><span class="timer" id="tm"></span><button class="btn qed sm" id="fin">Finish and grade</button></div>`+
+     mk.qs.map((p,i)=>`<div class="sheet"><div class="meta"><span class="badge t">Q${i+1} · ${esc(topicName(p.topic))}</span><span class="badge">10 pts</span></div><div class="stmt">${p.statement}</div>${symbar('mq'+i)}<textarea id="mq${i}" placeholder="Your proof">${esc(mk.ans['mq'+i]||'')}</textarea></div>`).join('');
+    mk.qs.forEach((p,i)=>{ const ta=$('#mq'+i); ta.oninput=()=>{mk.ans['mq'+i]=ta.value;}; });
+    const upd=()=>{ const left=Math.max(0,mk.end-Date.now()); const el=$('#tm'); if(!el){clearInterval(mk.tick);return;} const m=Math.floor(left/60000), s=Math.floor(left/1000)%60; el.textContent=`${m}:${String(s).padStart(2,'0')}`; el.classList.toggle('low',left<5*60000); if(left<=0){ clearInterval(mk.tick); mk.state='grade'; mock(); } };
+    clearInterval(mk.tick); mk.tick=setInterval(upd,1000); upd();
+    $('#fin').onclick=()=>{ clearInterval(mk.tick); mk.state='grade'; mock(); window.scrollTo(0,0); };
+    return;
+  }
+  const total=Object.values(mk.scores).reduce((a,b)=>a+b,0);
+  app.innerHTML=`<h2>Grade your mock exam</h2><p class="muted small">Award points honestly: a correct idea with a missing justification usually loses 2–4 points.</p>`+
+   mk.qs.map((p,i)=>`<div class="sheet"><div class="meta"><span class="badge t">Q${i+1} · ${esc(topicName(p.topic))}</span></div><div class="stmt">${p.statement}</div>
+   <div class="step"><div class="eyebrow">Your answer</div><div class="small" style="white-space:pre-wrap;font-family:var(--f-math)">${esc(mk.ans['mq'+i]||'(empty, or written on paper)')}</div></div>
+   <div class="model"><div class="eyebrow">Model proof</div>${p.proof}<div class="step rub"><div class="eyebrow">Rubric</div><ul>${p.rubric.map(r=>`<li>${r}</li>`).join('')}</ul></div>
+   <div class="row"><span class="small muted">Score:</span>${[0,2,4,6,8,10].map(s=>`<button class="chip ${mk.scores[i]===s?'on':''}" data-q="${i}" data-sc="${s}">${s}</button>`).join('')}</div></div></div>`).join('')+
+   `<div class="sheet row"><b>Total: ${total} / ${mk.qs.length*10}</b><span class="sp"></span><button class="btn" id="again">New mock exam</button></div>`;
+  app.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{ mk.scores[+b.dataset.q]=+b.dataset.sc; if(Object.keys(mk.scores).length===mk.qs.length){ const pct=Math.round(Object.values(mk.scores).reduce((a,c)=>a+c,0)/(mk.qs.length*10)*100); const best=store.get('mockBest',null); if(best===null||pct>best) store.set('mockBest',pct);} const y=window.scrollY; mock(); window.scrollTo(0,y); });
+  $('#again').onclick=()=>{mk.state='setup';mock();};
+}
+
+function render(){ ({home,toolkit,notes,lab:labView,pd:pdView,bug:bugView,cards,mock})[tab](); }
+renderNav(); render();
+})();
+</script>
+
+</body>
+</html>
